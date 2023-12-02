@@ -2,5 +2,7 @@
     import Greet from '../lib/Greet.svelte'
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<Greet />
+<div>
+    <button on:click="{greet}">Greet</button>
+    <p>{greetMsg}</p>
+</div>

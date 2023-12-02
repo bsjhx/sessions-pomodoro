@@ -1,9 +1,5 @@
-struct ApplicationContext {
-    sessions_cycle: SessionsCycle,
-    state: Box<dyn State>,
-}
-
-pub struct SessionsCycle {}
+use crate::sessions::sessions_cycle::SessionsCycle;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug)]
 pub struct NothingState;
@@ -13,6 +9,7 @@ pub struct WorkingTimeState;
 
 pub trait State {
     fn get_state_name(&self) -> String;
+
     fn start_cycle(self: Box<Self>, cycle: &mut SessionsCycle) -> Box<dyn State>;
     fn finish_cycle(self: Box<Self>, cycle: &mut SessionsCycle) -> Box<dyn State>;
 
@@ -27,6 +24,11 @@ impl State for NothingState {
 
     /// Only this method matters in NothingState
     fn start_cycle(self: Box<Self>, cycle: &mut SessionsCycle) -> Box<dyn State> {
+        cycle.last_state_change = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("Time went backwards")
+            .as_secs();
+
         Box::new(WorkingTimeState)
     }
 
@@ -64,13 +66,13 @@ impl State for WorkingTimeState {
 
 #[cfg(test)]
 mod test {
-    use crate::sessions::{NothingState, SessionsCycle, State, WorkingTimeState};
+    use super::*;
 
     #[test]
     fn nothing_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(NothingState);
-        let mut cycle = SessionsCycle {};
+        let mut cycle = SessionsCycle::new();
 
         // Act & Assert
         let state = state.finish_cycle(&mut cycle);
@@ -87,7 +89,7 @@ mod test {
     fn working_time_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(WorkingTimeState);
-        let mut cycle = SessionsCycle {};
+        let mut cycle = SessionsCycle::new();
 
         // Act & Assert
         let state = state.finish_cycle(&mut cycle);
