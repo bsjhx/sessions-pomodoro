@@ -15,10 +15,8 @@ fn main() {
 }
 
 #[tauri::command]
-fn start_cycle() {
+fn start_cycle() -> String {
     let mut a = ApplicationContext::new();
-    let old_name = a.get_current_state_name();
     a.change_state();
-    let new_name = a.get_current_state_name();
-    println!("{} -> {}", old_name, new_name);
+    a.get_current_state_name()
 }

@@ -1,5 +1,4 @@
 use crate::work_cycle::{NothingState, State, WorkCycle};
-use std::mem;
 
 pub struct ApplicationContext {
     current_work_cycle: WorkCycle,
