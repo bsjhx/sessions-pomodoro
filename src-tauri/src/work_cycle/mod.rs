@@ -1,5 +1,5 @@
 mod sessions_cycle;
-mod state_trait;
+mod states;
 
 pub use sessions_cycle::*;
-pub use state_trait::*;
+pub use states::*;

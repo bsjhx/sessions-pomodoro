@@ -1,8 +1,11 @@
 <script>
-    import Greet from '../lib/Greet.svelte'
+    import { invoke } from '@tauri-apps/api/tauri'
+
+    async function start_cycle() {
+        await invoke('start_cycle')
+    }
 </script>
 
 <div>
-    <button on:click="{greet}">Greet</button>
-    <p>{greetMsg}</p>
+    <button on:click="{start_cycle}">Greet</button>
 </div>
