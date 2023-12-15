@@ -1,8 +1,8 @@
 <script>
-    import Greet from '../lib/Greet.svelte'
+    import Timer from "$lib/Timer.svelte";
 </script>
 
 <div>
-    <button on:click="{greet}">Greet</button>
-    <p>{greetMsg}</p>
+    <h3>Pomodoro</h3>
+    <Timer></Timer>
 </div>
