@@ -5,9 +5,13 @@
 
     let interval = 0;
     let timeDisplay = "00:00";
+    let currentState = "NothingState";
 
-    function startCycle() {
-        interval = setInterval(increment, 50);
+    async function startCycle() {
+        currentState = await invoke('start_cycle');
+        if (interval === 0) {
+            interval = setInterval(increment, 50);
+        }
     }
 
     function stopCycle() {
@@ -33,6 +37,7 @@
 </script>
 
 <div>
+    <p>{currentState}</p>
     <button disabled='{interval > 0}' on:click='{startCycle}'>Start cycle</button>
     <button disabled='{interval === 0}' on:click="{stopCycle}">Stop cycle</button>
     {timeDisplay}
