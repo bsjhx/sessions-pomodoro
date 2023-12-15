@@ -33,7 +33,6 @@
         startTime++;
         timeDisplay = displayTimer(startTime);
     }
-
 </script>
 
 <div>

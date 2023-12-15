@@ -1,15 +1,5 @@
 <script>
     import Timer from "$lib/Timer.svelte";
-
-    async function startCycle() {
-
-    }
-
-    function stopCycle() {
-        // currentState = await invoke('start_cycle');
-
-    }
-
 </script>
 
 <div>
