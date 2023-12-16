@@ -2,7 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use crate::application_context::ApplicationContext;
-use crate::work_cycle::{NothingState, WorkCycle};
 use std::sync::Mutex;
 use tauri::State;
 
@@ -13,7 +12,11 @@ fn main() {
         .manage(AppState {
             application_context: Mutex::new(ApplicationContext::new()),
         })
-        .invoke_handler(tauri::generate_handler![start_cycle, finish_cycle])
+        .invoke_handler(tauri::generate_handler![
+            start_cycle,
+            finish_cycle,
+            end_current_session
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -29,6 +32,13 @@ fn start_cycle(state: State<AppState>) -> String {
 fn finish_cycle(state: State<AppState>) -> String {
     let mut app = state.application_context.lock().unwrap();
     app.finish_cycle();
+    app.get_current_state_name()
+}
+
+#[tauri::command]
+fn end_current_session(state: State<AppState>) -> String {
+    let mut app = state.application_context.lock().unwrap();
+    app.end_current_session();
     app.get_current_state_name()
 }
 

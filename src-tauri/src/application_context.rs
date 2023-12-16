@@ -26,6 +26,12 @@ impl ApplicationContext {
             self.state = Some(s.finish_cycle())
         }
     }
+
+    pub fn end_current_session(&mut self) {
+        if let Some(s) = self.state.take() {
+            self.state = Some(s.end())
+        }
+    }
 }
 
 #[cfg(test)]
