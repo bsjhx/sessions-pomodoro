@@ -22,8 +22,8 @@
 
     function displayTimer(i) {
         let seconds = i % 60;
-        let minutes = Math.floor(i/60) % 3600;
-        return  "".concat(renderTimeNumber(minutes), ':', renderTimeNumber(seconds));
+        let minutes = Math.floor(i / 60) % 3600;
+        return "".concat(renderTimeNumber(minutes), ':', renderTimeNumber(seconds));
     }
 
     function renderTimeNumber(n) {
@@ -36,9 +36,32 @@
     }
 </script>
 
-<div>
-    <p>{currentState}</p>
-    <button disabled='{interval > 0}' on:click='{startCycle}'>Start cycle</button>
-    <button disabled='{interval === 0}' on:click="{finishCycle}">Stop cycle</button>
-    {timeDisplay}
+<div class="container text-center card mt-4">
+    <div class="card-body mt-2">
+        <div class="row m-3">
+            <div class="col">{currentState}</div>
+        </div>
+
+        <div class="row m-5">
+            <div class="col"><h1><span class="badge text-bg-info">{timeDisplay}</span></h1></div>
+        </div>
+
+        <div class="row m-5">
+            <div class="col">
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-primary" disabled='{interval > 0}' on:click='{startCycle}'>Start
+                    cycle
+                </button>
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-danger" disabled='{interval === 0}' on:click="{finishCycle}">Stop
+                    cycle
+                </button>
+            </div>
+            <div class="col">
+            </div>
+        </div>
+
+    </div>
 </div>
