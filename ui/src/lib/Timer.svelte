@@ -14,7 +14,8 @@
         }
     }
 
-    function stopCycle() {
+    async function finishCycle() {
+        currentState = await invoke('finish_cycle');
         clearInterval(interval);
         interval = 0;
     }
@@ -38,6 +39,6 @@
 <div>
     <p>{currentState}</p>
     <button disabled='{interval > 0}' on:click='{startCycle}'>Start cycle</button>
-    <button disabled='{interval === 0}' on:click="{stopCycle}">Stop cycle</button>
+    <button disabled='{interval === 0}' on:click="{finishCycle}">Stop cycle</button>
     {timeDisplay}
 </div>

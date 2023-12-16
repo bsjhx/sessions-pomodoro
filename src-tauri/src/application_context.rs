@@ -1,14 +1,12 @@
-use crate::work_cycle::{NothingState, State, WorkCycle};
+use crate::work_cycle::{NothingState, State};
 
 pub struct ApplicationContext {
-    current_work_cycle: WorkCycle,
-    state: Option<Box<dyn State>>,
+    pub state: Option<Box<dyn State + Send + Sync>>,
 }
 
 impl ApplicationContext {
     pub fn new() -> Self {
         ApplicationContext {
-            current_work_cycle: WorkCycle::new(),
             state: Some(Box::new(NothingState)),
         }
     }
@@ -17,9 +15,15 @@ impl ApplicationContext {
         self.state.as_ref().unwrap().get_state_name()
     }
 
-    pub fn change_state(&mut self) {
+    pub fn start_cycle(&mut self) {
         if let Some(s) = self.state.take() {
             self.state = Some(s.start_cycle())
+        }
+    }
+
+    pub fn finish_cycle(&mut self) {
+        if let Some(s) = self.state.take() {
+            self.state = Some(s.finish_cycle())
         }
     }
 }

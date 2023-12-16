@@ -1,15 +1,17 @@
-use crate::work_cycle::sessions_cycle::WorkCycle;
+use serde::Serialize;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct NothingState;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct WorkingTimeState;
 
 pub trait State {
     fn get_state_name(&self) -> String;
 
-    fn start_cycle(self: Box<Self>) -> Box<dyn State>;
+    fn start_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync>;
+
+    fn finish_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync>;
 }
 
 /// Starting point of application, initial value for cycle.
@@ -18,9 +20,12 @@ impl State for NothingState {
         "NothingState".to_string()
     }
 
-    /// Only this method matters in NothingState
-    fn start_cycle(self: Box<Self>) -> Box<dyn State> {
+    fn start_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync> {
         Box::new(WorkingTimeState)
+    }
+
+    fn finish_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync> {
+        Box::new(NothingState)
     }
 }
 
@@ -30,8 +35,13 @@ impl State for WorkingTimeState {
         "WorkingTimeState".to_string()
     }
     /// Does nothing, can' start already started cycle
-    fn start_cycle(self: Box<Self>) -> Box<dyn State> {
+    ///
+    fn start_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync> {
         self
+    }
+
+    fn finish_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync> {
+        Box::new(NothingState)
     }
 }
 
@@ -43,33 +53,25 @@ mod test {
     fn nothing_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(NothingState);
-        let mut cycle = WorkCycle::new();
 
         // Act & Assert
-        // let state = state.finish_cycle(&mut cycle);
-        // assert_eq!(state.get_state_name(), "NothingState");
+        let state = state.finish_cycle();
+        assert_eq!(state.get_state_name(), "NothingState");
 
-        // let state = state.end(&mut cycle);
-        // assert_eq!(state.get_state_name(), "NothingState");
-        //
-        // let state = state.start_cycle();
-        // assert_eq!(state.get_state_name(), "WorkingTimeState");
+        let state = state.start_cycle();
+        assert_eq!(state.get_state_name(), "WorkingTimeState");
     }
 
     #[test]
     fn working_time_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(WorkingTimeState);
-        let mut cycle = WorkCycle::new();
 
         // Act & Assert
-        // let state = state.finish_cycle(&mut cycle);
-        // assert_eq!(state.get_state_name(), "NothingState");
-        //
-        // let state = state.end(&mut cycle);
-        // assert_eq!(state.get_state_name(), "NothingState");
-        //
-        // let state = state.start_cycle();
-        // assert_eq!(state.get_state_name(), "WorkingTimeState");
+        let state = state.finish_cycle();
+        assert_eq!(state.get_state_name(), "NothingState");
+
+        let state = state.start_cycle();
+        assert_eq!(state.get_state_name(), "WorkingTimeState");
     }
 }
