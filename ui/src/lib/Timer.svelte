@@ -9,17 +9,15 @@
     let timeout = 500;
     let counterOverFlowed = false;
 
-    let times = {};
+    let times;
 
-    onMount(() => {
+    onMount(async () => {
         currentState = "NothingState";
 
-        times['BreakTimeState'] = 5 * 60;
-        times['WorkingTimeState'] = 25 * 60;
-        times['NothingState'] = 25 * 60;
-
-        counter = times['WorkingTimeState'];
+        times = await invoke('get_times');
+        counter = times.workingTime;
         timeDisplay = updateClock(counter);
+
     });
 
     async function startCycle() {
@@ -108,6 +106,5 @@
                 </div>
             {/if}
         </div>
-
     </div>
 </div>

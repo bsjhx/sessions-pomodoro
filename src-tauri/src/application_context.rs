@@ -1,13 +1,30 @@
 use crate::work_cycle::{NothingState, State};
+use serde::Serialize;
+use std::collections::HashMap;
 
 pub struct ApplicationContext {
     pub state: Option<Box<dyn State + Send + Sync>>,
+    pub time_settings: TimeSettings,
+}
+
+#[derive(Serialize, Copy, Clone)]
+pub struct TimeSettings {
+    #[serde(rename = "workingTime")]
+    working_time: i32,
+    #[serde(rename = "breakTime")]
+    break_time: i32,
 }
 
 impl ApplicationContext {
     pub fn new() -> Self {
+        let mut time_settings = TimeSettings {
+            working_time: 25 * 60,
+            break_time: 5 * 60,
+        };
+
         ApplicationContext {
             state: Some(Box::new(NothingState)),
+            time_settings,
         }
     }
 
