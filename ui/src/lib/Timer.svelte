@@ -1,26 +1,70 @@
 <script>
     import {invoke} from '@tauri-apps/api/tauri'
+    import {onMount} from "svelte";
 
-    export let startTime = 0;
-
+    let counter = 0;
     let interval = 0;
-    let timeDisplay = "00:00";
-    let currentState = "NothingState";
+    let timeDisplay = "";
+    let currentState = "";
+    let timeout = 500;
+    let counterOverFlowed = false;
+
+    let times = {};
+
+    onMount(() => {
+        currentState = "NothingState";
+
+        times['BreakTimeState'] = 5 * 60;
+        times['WorkingTimeState'] = 25 * 60;
+        times['NothingState'] = 25 * 60;
+
+        counter = times['WorkingTimeState'];
+        timeDisplay = updateClock(counter);
+    });
 
     async function startCycle() {
         currentState = await invoke('start_cycle');
         if (interval === 0) {
-            interval = setInterval(increment, 50);
+            interval = setInterval(onIntervalHandler, timeout);
         }
+    }
+
+    function onIntervalHandler() {
+         if (counter <= 0) {
+             counterOverFlowed = true;
+             counter = times[currentState];
+         }
+
+         if (counterOverFlowed) {
+             counter++;
+         } else {
+             counter--;
+         }
+
+        timeDisplay = updateClock(counter);
     }
 
     async function finishCycle() {
         currentState = await invoke('finish_cycle');
+
+        counter = times['WorkingTimeState'];
+        timeDisplay = updateClock(counter);
         clearInterval(interval);
         interval = 0;
+        counterOverFlowed = false;
     }
 
-    function displayTimer(i) {
+    async function endCurrentSession() {
+        currentState = await invoke('end_current_session');
+        counter = times[currentState];
+        timeDisplay = updateClock(counter);
+        clearInterval(interval);
+        interval = setInterval(onIntervalHandler, timeout);
+
+        counterOverFlowed = false;
+    }
+
+    function updateClock(i) {
         let seconds = i % 60;
         let minutes = Math.floor(i / 60) % 3600;
         return "".concat(renderTimeNumber(minutes), ':', renderTimeNumber(seconds));
@@ -28,11 +72,6 @@
 
     function renderTimeNumber(n) {
         return n < 10 ? "".concat('0', n.toString()) : n.toString();
-    }
-
-    function increment() {
-        startTime++;
-        timeDisplay = displayTimer(startTime);
     }
 </script>
 
@@ -48,8 +87,6 @@
 
         <div class="row m-5">
             <div class="col">
-            </div>
-            <div class="col">
                 <button type="button" class="btn btn-primary" disabled='{interval > 0}' on:click='{startCycle}'>Start
                     cycle
                 </button>
@@ -60,6 +97,9 @@
                 </button>
             </div>
             <div class="col">
+                <button type="button" class="btn btn-secondary" disabled='{currentState === "NothigState"}'
+                        on:click='{endCurrentSession}'>End
+                </button>
             </div>
         </div>
 
