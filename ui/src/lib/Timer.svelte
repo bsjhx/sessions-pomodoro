@@ -30,16 +30,16 @@
     }
 
     function onIntervalHandler() {
-         if (counter <= 0) {
-             counterOverFlowed = true;
-             counter = times[currentState];
-         }
+        if (counter <= 0) {
+            counterOverFlowed = true;
+            counter = times[currentState];
+        }
 
-         if (counterOverFlowed) {
-             counter++;
-         } else {
-             counter--;
-         }
+        if (counterOverFlowed) {
+            counter++;
+        } else {
+            counter--;
+        }
 
         timeDisplay = updateClock(counter);
     }
@@ -86,21 +86,27 @@
         </div>
 
         <div class="row m-5">
-            <div class="col">
-                <button type="button" class="btn btn-primary" disabled='{interval > 0}' on:click='{startCycle}'>Start
-                    cycle
-                </button>
-            </div>
-            <div class="col">
-                <button type="button" class="btn btn-danger" disabled='{interval === 0}' on:click="{finishCycle}">Stop
-                    cycle
-                </button>
-            </div>
-            <div class="col">
-                <button type="button" class="btn btn-secondary" disabled='{currentState === "NothigState"}'
-                        on:click='{endCurrentSession}'>End
-                </button>
-            </div>
+            {#if currentState === 'NothingState'}
+                <div class="col">
+                    <button type="button" class="btn btn-primary" disabled='{interval > 0}' on:click='{startCycle}'>
+                        Start
+                        cycle
+                    </button>
+                </div>
+            {/if}
+            {#if currentState !== 'NothingState'}
+                <div class="col">
+                    <button type="button" class="btn btn-danger" disabled='{interval === 0}' on:click="{finishCycle}">
+                        Stop
+                        cycle
+                    </button>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-secondary" disabled='{currentState === "NothigState"}'
+                            on:click='{endCurrentSession}'>End
+                    </button>
+                </div>
+            {/if}
         </div>
 
     </div>
