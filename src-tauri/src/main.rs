@@ -2,7 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use crate::application_context::{ApplicationContext, TimeSettings};
-use std::collections::HashMap;
 use std::sync::Mutex;
 use tauri::State;
 
