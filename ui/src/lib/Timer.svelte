@@ -5,20 +5,20 @@
     let counter = 0;
     let interval = 0;
     let timeDisplay = "";
-    let currentState = "";
+    let currentState = {state_name: '', state_duration: 0};
     let timeout = 500;
     let counterOverFlowed = false;
+    let initialDuration = 0;
 
-    let times = {};
+    onMount(async () => {
+        initialDuration = await invoke('get_initial_time');
 
-    onMount(() => {
-        currentState = "NothingState";
+        currentState = {
+            state_name: 'NothingState',
+            state_duration: initialDuration
+        };
 
-        times['BreakTimeState'] = 5 * 60;
-        times['WorkingTimeState'] = 25 * 60;
-        times['NothingState'] = 25 * 60;
-
-        counter = times['WorkingTimeState'];
+        counter = currentState.state_duration;
         timeDisplay = updateClock(counter);
     });
 
@@ -30,16 +30,16 @@
     }
 
     function onIntervalHandler() {
-         if (counter <= 0) {
-             counterOverFlowed = true;
-             counter = times[currentState];
-         }
+        if (counter <= 0) {
+            counterOverFlowed = true;
+            counter = currentState.state_duration;
+        }
 
-         if (counterOverFlowed) {
-             counter++;
-         } else {
-             counter--;
-         }
+        if (counterOverFlowed) {
+            counter++;
+        } else {
+            counter--;
+        }
 
         timeDisplay = updateClock(counter);
     }
@@ -47,7 +47,7 @@
     async function finishCycle() {
         currentState = await invoke('finish_cycle');
 
-        counter = times['WorkingTimeState'];
+        counter = initialDuration;
         timeDisplay = updateClock(counter);
         clearInterval(interval);
         interval = 0;
@@ -56,7 +56,7 @@
 
     async function endCurrentSession() {
         currentState = await invoke('end_current_session');
-        counter = times[currentState];
+        counter = currentState.state_duration;
         timeDisplay = updateClock(counter);
         clearInterval(interval);
         interval = setInterval(onIntervalHandler, timeout);
@@ -78,7 +78,7 @@
 <div class="container text-center card mt-4">
     <div class="card-body mt-2">
         <div class="row m-3">
-            <div class="col">{currentState}</div>
+            <div class="col">{currentState.state_name}</div>
         </div>
 
         <div class="row m-5">
@@ -86,22 +86,27 @@
         </div>
 
         <div class="row m-5">
-            <div class="col">
-                <button type="button" class="btn btn-primary" disabled='{interval > 0}' on:click='{startCycle}'>Start
-                    cycle
-                </button>
-            </div>
-            <div class="col">
-                <button type="button" class="btn btn-danger" disabled='{interval === 0}' on:click="{finishCycle}">Stop
-                    cycle
-                </button>
-            </div>
-            <div class="col">
-                <button type="button" class="btn btn-secondary" disabled='{currentState === "NothigState"}'
-                        on:click='{endCurrentSession}'>End
-                </button>
-            </div>
+            {#if currentState.state_name === 'NothingState'}
+                <div class="col">
+                    <button type="button" class="btn btn-primary" on:click='{startCycle}'>
+                        Start
+                        cycle
+                    </button>
+                </div>
+            {/if}
+            {#if currentState.state_name !== 'NothingState'}
+                <div class="col">
+                    <button type="button" class="btn btn-danger" on:click="{finishCycle}">
+                        Stop
+                        cycle
+                    </button>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-secondary"
+                            on:click='{endCurrentSession}'>End
+                    </button>
+                </div>
+            {/if}
         </div>
-
     </div>
 </div>
