@@ -57,10 +57,7 @@ mod test {
     fn working_time_should_return_proper_settings() {
         // Arrange
         let state = Box::new(WorkingTimeState);
-        let some_time_settings = TimeSettings {
-            working_time: 100,
-            break_time: 50,
-        };
+        let some_time_settings = TimeSettings::new(100, 50);
 
         // Act & Assert
         assert_eq!(state.get_state_name(), "WorkingTimeState");
