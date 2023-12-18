@@ -31,8 +31,9 @@ impl State for WorkingTimeState {
 
 #[cfg(test)]
 mod test {
+    use crate::application_context::TimeSettings;
     use crate::work_cycle::states::working_time_state::WorkingTimeState;
-    use crate::work_cycle::State;
+    use crate::work_cycle::{BreakTimeState, State};
 
     #[test]
     fn working_time_state_should_be_able_to_change_state() {
@@ -50,5 +51,19 @@ mod test {
         let state = Box::new(WorkingTimeState);
         let state = state.end();
         assert_eq!(state.get_state_name(), "BreakTimeState");
+    }
+
+    #[test]
+    fn working_time_should_return_proper_settings() {
+        // Arrange
+        let state = Box::new(WorkingTimeState);
+        let some_time_settings = TimeSettings {
+            working_time: 100,
+            break_time: 50,
+        };
+
+        // Act & Assert
+        assert_eq!(state.get_state_name(), "WorkingTimeState");
+        assert_eq!(state.get_duration(&some_time_settings), 100);
     }
 }

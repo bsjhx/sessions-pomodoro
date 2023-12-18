@@ -50,4 +50,18 @@ mod test {
         let state = state.end();
         assert_eq!(state.get_state_name(), "WorkingTimeState");
     }
+
+    #[test]
+    fn break_time_should_return_proper_settings() {
+        // Arrange
+        let state = Box::new(BreakTimeState);
+        let some_time_settings = TimeSettings {
+            working_time: 100,
+            break_time: 50,
+        };
+
+        // Act & Assert
+        assert_eq!(state.get_state_name(), "BreakTimeState");
+        assert_eq!(state.get_duration(&some_time_settings), 50);
+    }
 }

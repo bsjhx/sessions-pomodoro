@@ -26,8 +26,9 @@ impl State for NothingState {
 
 #[cfg(test)]
 mod test {
+    use crate::application_context::TimeSettings;
     use crate::work_cycle::states::nothing_state::NothingState;
-    use crate::work_cycle::State;
+    use crate::work_cycle::{BreakTimeState, State};
 
     #[test]
     fn nothing_state_should_be_able_to_change_state() {
@@ -46,5 +47,19 @@ mod test {
 
         let state = state.end();
         assert_eq!(state.get_state_name(), "NothingState");
+    }
+
+    #[test]
+    fn nothing_state_should_return_proper_settings() {
+        // Arrange
+        let state = Box::new(NothingState);
+        let some_time_settings = TimeSettings {
+            working_time: 100,
+            break_time: 50,
+        };
+
+        // Act & Assert
+        assert_eq!(state.get_state_name(), "NothingState");
+        assert_eq!(state.get_duration(&some_time_settings), 0);
     }
 }
