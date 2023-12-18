@@ -1,3 +1,4 @@
+use crate::application_context::TimeSettings;
 use crate::work_cycle::states::nothing_state::NothingState;
 use crate::work_cycle::states::state_trait::State;
 use crate::work_cycle::states::working_time_state::WorkingTimeState;
@@ -21,6 +22,10 @@ impl State for BreakTimeState {
 
     fn end(self: Box<Self>) -> Box<dyn State + Send + Sync> {
         Box::new(WorkingTimeState)
+    }
+
+    fn get_duration(&self, time_settings: &TimeSettings) -> i32 {
+        time_settings.break_time
     }
 }
 

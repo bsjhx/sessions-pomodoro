@@ -9,9 +9,9 @@ pub struct ApplicationContext {
 #[derive(Serialize, Copy, Clone)]
 pub struct TimeSettings {
     #[serde(rename = "workingTime")]
-    working_time: i32,
+    pub working_time: i32,
     #[serde(rename = "breakTime")]
-    break_time: i32,
+    pub break_time: i32,
 }
 
 impl ApplicationContext {
@@ -29,6 +29,13 @@ impl ApplicationContext {
 
     pub fn get_current_state_name(&self) -> String {
         self.state.as_ref().unwrap().get_state_name()
+    }
+
+    pub fn get_current_state_duration(&self) -> i32 {
+        self.state
+            .as_ref()
+            .unwrap()
+            .get_duration(&self.time_settings)
     }
 
     pub fn start_cycle(&mut self) {

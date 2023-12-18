@@ -1,3 +1,4 @@
+use crate::application_context::TimeSettings;
 use crate::work_cycle::states::nothing_state::NothingState;
 use crate::work_cycle::{BreakTimeState, State};
 use serde::Serialize;
@@ -21,6 +22,10 @@ impl State for WorkingTimeState {
 
     fn end(self: Box<Self>) -> Box<dyn State + Send + Sync> {
         Box::new(BreakTimeState)
+    }
+
+    fn get_duration(&self, time_settings: &TimeSettings) -> i32 {
+        time_settings.working_time
     }
 }
 
