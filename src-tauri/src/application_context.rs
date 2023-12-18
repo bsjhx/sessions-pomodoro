@@ -16,6 +16,7 @@ pub struct TimeSettings {
 
 impl ApplicationContext {
     pub fn new() -> Self {
+        // todo move to different place and load from file
         let time_settings = TimeSettings {
             working_time: 25 * 60,
             break_time: 5 * 60,

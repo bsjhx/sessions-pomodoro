@@ -9,7 +9,7 @@ pub trait State {
 
     fn end(self: Box<Self>) -> Box<dyn State + Send + Sync>;
 
-    fn get_duration(&self, time_settings: &TimeSettings) -> i32 {
+    fn get_duration(&self, _time_settings: &TimeSettings) -> i32 {
         0
     }
 }
