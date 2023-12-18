@@ -6,7 +6,9 @@ use crate::work_cycle::facade::{end_current_session, finish_cycle, get_initial_t
 use std::sync::Mutex;
 
 mod application_context;
+mod configuration;
 mod work_cycle;
+
 fn main() {
     tauri::Builder::default()
         .manage(AppState {

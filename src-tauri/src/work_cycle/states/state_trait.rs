@@ -1,4 +1,4 @@
-use crate::application_context::TimeSettings;
+use crate::configuration::TimeSettings;
 
 pub trait State {
     fn get_state_name(&self) -> String;

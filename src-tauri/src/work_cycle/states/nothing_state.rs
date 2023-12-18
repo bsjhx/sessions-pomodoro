@@ -26,9 +26,9 @@ impl State for NothingState {
 
 #[cfg(test)]
 mod test {
-    use crate::application_context::TimeSettings;
+    use crate::configuration::TimeSettings;
     use crate::work_cycle::states::nothing_state::NothingState;
-    use crate::work_cycle::{BreakTimeState, State};
+    use crate::work_cycle::State;
 
     #[test]
     fn nothing_state_should_be_able_to_change_state() {

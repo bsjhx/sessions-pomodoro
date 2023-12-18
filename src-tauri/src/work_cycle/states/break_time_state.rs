@@ -1,4 +1,4 @@
-use crate::application_context::TimeSettings;
+use crate::configuration::TimeSettings;
 use crate::work_cycle::states::nothing_state::NothingState;
 use crate::work_cycle::states::state_trait::State;
 use crate::work_cycle::states::working_time_state::WorkingTimeState;

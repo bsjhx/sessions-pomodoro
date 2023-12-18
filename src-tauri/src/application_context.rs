@@ -1,17 +1,9 @@
+use crate::configuration::TimeSettings;
 use crate::work_cycle::{NothingState, State};
-use serde::Serialize;
 
 pub struct ApplicationContext {
     pub state: Option<Box<dyn State + Send + Sync>>,
     pub time_settings: TimeSettings,
-}
-
-#[derive(Serialize, Copy, Clone)]
-pub struct TimeSettings {
-    #[serde(rename = "workingTime")]
-    pub working_time: i32,
-    #[serde(rename = "breakTime")]
-    pub break_time: i32,
 }
 
 impl ApplicationContext {
