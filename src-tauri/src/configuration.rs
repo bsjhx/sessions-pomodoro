@@ -16,3 +16,9 @@ impl TimeSettings {
         }
     }
 }
+
+impl Default for TimeSettings {
+    fn default() -> Self {
+        TimeSettings::new(0, 0)
+    }
+}

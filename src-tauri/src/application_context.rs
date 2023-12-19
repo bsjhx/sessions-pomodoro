@@ -46,6 +46,12 @@ impl ApplicationContext {
     }
 }
 
+impl Default for ApplicationContext {
+    fn default() -> Self {
+        ApplicationContext::new()
+    }
+}
+
 #[cfg(test)]
 mod test {
 
