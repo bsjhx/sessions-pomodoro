@@ -26,34 +26,21 @@ fn main() {
                     .unwrap(),
             )
             .build();
-
             let _ = store.load();
-
-            println!("zelazko {:?}", std::env::current_exe().unwrap());
-            println!("zelazko {:?}", Path::new("."));
-
-            println!("JAS FASOLA {}", store.get("adam").is_some());
-
-            for (a, b) in store.entries().into_iter() {
-                println!("ejjj {} - {}", a, b);
-            }
 
             let a: State<AppState> = app.state();
             let mut a = a.application_context.lock().unwrap();
-            a.time_settings.working_time = 99999;
-            a.time_settings.break_time = 99999;
 
-            // let res = store.insert("adam".to_string(), json!("mickw"));
-            // let res = store.insert("c".to_string(), json!("d"));
-            // let _ = store.save();
-            // println!("DUPA {}", store.get("hello".to_string()).unwrap());
+            let time_settings = store.get("timeSettings").unwrap().to_string();
+            let time_settings: TimeSettings =
+                serde_json::from_str(&time_settings.to_string()).unwrap();
+
+            a.time_settings = time_settings;
+
             Ok(())
         })
         .manage(AppState {
             application_context: Default::default(),
-        })
-        .manage(AppConfiguration {
-            configuration: Default::default(),
         })
         .invoke_handler(tauri::generate_handler![
             start_cycle,
@@ -67,8 +54,4 @@ fn main() {
 
 struct AppState {
     application_context: Mutex<ApplicationContext>,
-}
-
-struct AppConfiguration {
-    configuration: Mutex<TimeSettings>,
 }

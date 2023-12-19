@@ -1,6 +1,6 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Copy, Clone)]
+#[derive(Serialize, Copy, Clone, Debug, Deserialize)]
 pub struct TimeSettings {
     #[serde(rename = "workingTime")]
     pub working_time: i32,
