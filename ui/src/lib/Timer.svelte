@@ -2,13 +2,18 @@
     import {invoke} from '@tauri-apps/api/tauri'
     import {onMount} from "svelte";
 
-    let counter = 0;
     let interval = 0;
     let timeDisplay = "";
     let currentState = {state_name: '', state_duration: 0};
-    let timeout = 500;
+    let timeout = 20;
     let counterOverFlowed = false;
     let initialDuration = 0;
+
+    let counter = 0;
+    let additionalCounter = 0;
+
+    let progress = 0;
+    let additionalProgress = 0;
 
     onMount(async () => {
         initialDuration = await invoke('get_initial_time');
@@ -30,18 +35,20 @@
     }
 
     function onIntervalHandler() {
-        if (counter <= 0) {
-            counterOverFlowed = true;
-            counter = currentState.state_duration;
-        }
-
         if (counterOverFlowed) {
-            counter++;
+            additionalCounter++;
+            progress = (counter / (counter + additionalCounter)) * 100;
+            additionalProgress = (additionalCounter / (counter + additionalCounter)) * 100;
         } else {
             counter--;
+            progress = ((currentState.state_duration - counter) / currentState.state_duration) * 100;
+            if (counter <= 0) {
+                counterOverFlowed = true;
+                counter = currentState.state_duration;
+            }
         }
 
-        timeDisplay = updateClock(counter);
+        timeDisplay = updateClock(counter + additionalCounter);
     }
 
     async function finishCycle() {
@@ -60,6 +67,10 @@
         timeDisplay = updateClock(counter);
         clearInterval(interval);
         interval = setInterval(onIntervalHandler, timeout);
+
+        progress = 0;
+        additionalProgress = 0;
+        additionalCounter = 0;
 
         counterOverFlowed = false;
     }
@@ -84,6 +95,19 @@
         <div class="row m-5">
             <div class="col"><h1><span class="badge text-bg-info">{timeDisplay}</span></h1></div>
         </div>
+
+        <div class="mt-2">
+            <div class="progress-stacked">
+                <div class="progress" role="progressbar" aria-label="Segment one" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" style="width: {progress}%">
+                    <div class="progress-bar"></div>
+                </div>
+                <div class="progress" role="progressbar" aria-label="Segment two" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: {additionalProgress}%">
+                    <div class="progress-bar bg-success"></div>
+                </div>
+            </div>
+            {progress}
+        </div>
+
 
         <div class="row m-5">
             {#if currentState.state_name === 'NothingState'}
