@@ -8,11 +8,9 @@ pub struct ApplicationContext {
 
 impl ApplicationContext {
     pub fn new() -> Self {
-        let time_settings = TimeSettings::new(25 * 60, 5 * 60);
-
         ApplicationContext {
             state: Some(Box::new(NothingState)),
-            time_settings,
+            time_settings: TimeSettings::default(),
         }
     }
 
@@ -43,6 +41,12 @@ impl ApplicationContext {
         if let Some(s) = self.state.take() {
             self.state = Some(s.end())
         }
+    }
+}
+
+impl Default for ApplicationContext {
+    fn default() -> Self {
+        ApplicationContext::new()
     }
 }
 

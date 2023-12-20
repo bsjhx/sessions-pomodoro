@@ -1,6 +1,6 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Copy, Clone)]
+#[derive(Serialize, Copy, Clone, Debug, Deserialize)]
 pub struct TimeSettings {
     #[serde(rename = "workingTime")]
     pub working_time: i32,
@@ -14,5 +14,11 @@ impl TimeSettings {
             working_time,
             break_time,
         }
+    }
+}
+
+impl Default for TimeSettings {
+    fn default() -> Self {
+        TimeSettings::new(0, 0)
     }
 }
