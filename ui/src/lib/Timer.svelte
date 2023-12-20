@@ -58,6 +58,10 @@
         timeDisplay = updateClock(counter);
         clearInterval(interval);
         interval = 0;
+        progress = 0;
+        additionalProgress = 0;
+        additionalCounter = 0;
+
         counterOverFlowed = false;
     }
 
@@ -105,7 +109,6 @@
                     <div class="progress-bar bg-success"></div>
                 </div>
             </div>
-            {progress}
         </div>
 
 
