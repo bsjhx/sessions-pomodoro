@@ -6,6 +6,8 @@ use crate::configuration::TimeSettings;
 use crate::work_cycle::facade::{end_current_session, finish_cycle, get_initial_time, start_cycle};
 use core::default::Default;
 use serde_json::json;
+use std::env;
+use std::env::VarError;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use tauri::{Manager, State};
@@ -19,13 +21,19 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
-            let mut store = StoreBuilder::new(
-                app.handle(),
-                "/Users/michalrakoczy/Projects/rust/pomodoro-app/store.json"
-                    .parse()
-                    .unwrap(),
-            )
-            .build();
+            let file_path = match env::var("POMODORO_FILES_PATH") {
+                Ok(path) => path,
+                Err(_) => {
+                    panic!("POMODORO_FILES_PATH not set!!!")
+                }
+            };
+
+            let mut path = PathBuf::new();
+            path.push(file_path);
+            path.push("dev_store");
+            path.set_extension("json");
+
+            let mut store = StoreBuilder::new(app.handle(), path).build();
             let _ = store.load();
 
             let a: State<AppState> = app.state();
