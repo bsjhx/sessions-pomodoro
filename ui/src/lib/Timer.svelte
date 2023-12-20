@@ -111,7 +111,6 @@
             </div>
         </div>
 
-
         <div class="row m-5">
             {#if currentState.state_name === 'NothingState'}
                 <div class="col">
