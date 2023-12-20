@@ -5,13 +5,11 @@ use crate::application_context::ApplicationContext;
 use crate::configuration::TimeSettings;
 use crate::work_cycle::facade::{end_current_session, finish_cycle, get_initial_time, start_cycle};
 use core::default::Default;
-use serde_json::json;
 use std::env;
-use std::env::VarError;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::{Manager, State};
-use tauri_plugin_store::{Store, StoreBuilder};
+use tauri_plugin_store::StoreBuilder;
 
 mod application_context;
 mod configuration;
