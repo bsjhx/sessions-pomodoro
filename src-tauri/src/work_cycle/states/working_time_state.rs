@@ -1,6 +1,6 @@
 use crate::configuration::TimeSettings;
 use crate::work_cycle::states::nothing_state::NothingState;
-use crate::work_cycle::{BreakTimeState, State};
+use crate::work_cycle::{BreakTimeState, State, WorkCycle};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -12,7 +12,7 @@ impl State for WorkingTimeState {
         "WorkingTimeState".to_string()
     }
 
-    fn start_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync> {
+    fn start_cycle(self: Box<Self>, cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
         self
     }
 
@@ -33,15 +33,16 @@ impl State for WorkingTimeState {
 mod test {
     use crate::configuration::TimeSettings;
     use crate::work_cycle::states::working_time_state::WorkingTimeState;
-    use crate::work_cycle::State;
+    use crate::work_cycle::{State, WorkCycle};
 
     #[test]
     fn working_time_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(WorkingTimeState);
+        let mut work_cycle = WorkCycle::new(4);
 
         // Act & Assert - start and finish
-        let state = state.start_cycle();
+        let state = state.start_cycle(&mut work_cycle);
         assert_eq!(state.get_state_name(), "WorkingTimeState");
 
         let state = state.finish_cycle();

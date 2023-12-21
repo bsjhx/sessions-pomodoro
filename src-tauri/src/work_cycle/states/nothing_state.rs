@@ -1,5 +1,5 @@
 use crate::work_cycle::states::working_time_state::WorkingTimeState;
-use crate::work_cycle::State;
+use crate::work_cycle::{State, WorkCycle};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -11,7 +11,8 @@ impl State for NothingState {
         "NothingState".to_string()
     }
 
-    fn start_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync> {
+    fn start_cycle(self: Box<Self>, cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
+        cycle.increment_work_session();
         Box::new(WorkingTimeState)
     }
 
@@ -28,18 +29,19 @@ impl State for NothingState {
 mod test {
     use crate::configuration::TimeSettings;
     use crate::work_cycle::states::nothing_state::NothingState;
-    use crate::work_cycle::State;
+    use crate::work_cycle::{State, WorkCycle};
 
     #[test]
     fn nothing_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(NothingState);
+        let mut work_cycle = WorkCycle::new(4);
 
         // Act & Assert - finish and start
         let state = state.finish_cycle();
         assert_eq!(state.get_state_name(), "NothingState");
 
-        let state = state.start_cycle();
+        let state = state.start_cycle(&mut work_cycle);
         assert_eq!(state.get_state_name(), "WorkingTimeState");
 
         // Act & Assert - end
