@@ -12,7 +12,7 @@ impl State for WorkingTimeState {
         "WorkingTimeState".to_string()
     }
 
-    fn start_cycle(self: Box<Self>, cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
+    fn start_cycle(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
         self
     }
 

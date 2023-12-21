@@ -49,7 +49,7 @@ mod test {
         let mut work_cycle = WorkCycle::new(n);
 
         // Act
-        for i in 0..n {
+        for _ in 0..n {
             assert_that!(work_cycle.is_next_break_long()).is_false();
             work_cycle.increment_work_session();
         }
