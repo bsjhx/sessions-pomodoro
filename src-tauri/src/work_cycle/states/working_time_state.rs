@@ -1,6 +1,6 @@
 use crate::configuration::TimeSettings;
 use crate::work_cycle::states::nothing_state::NothingState;
-use crate::work_cycle::{BreakTimeState, State, WorkCycle};
+use crate::work_cycle::{ShortBreakTimeState, State, WorkCycle};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -21,7 +21,7 @@ impl State for WorkingTimeState {
     }
 
     fn end(self: Box<Self>) -> Box<dyn State + Send + Sync> {
-        Box::new(BreakTimeState)
+        Box::new(ShortBreakTimeState)
     }
 
     fn get_duration(&self, time_settings: &TimeSettings) -> i32 {
@@ -51,7 +51,7 @@ mod test {
         // Act & Assert - end
         let state = Box::new(WorkingTimeState);
         let state = state.end();
-        assert_eq!(state.get_state_name(), "BreakTimeState");
+        assert_eq!(state.get_state_name(), "ShortBreakTimeState");
     }
 
     #[test]
