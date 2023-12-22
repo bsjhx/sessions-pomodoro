@@ -41,5 +41,5 @@ pub fn end_current_session(state: State<AppState>) -> CurrentStateResponse {
 #[tauri::command]
 pub fn get_initial_time(state: State<AppState>) -> i32 {
     let app = state.application_context.lock().unwrap();
-    app.time_settings.working_time
+    app.settings.time_settings.working_time
 }
