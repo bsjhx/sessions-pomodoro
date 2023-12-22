@@ -1,6 +1,10 @@
 {
-  "timeSettings": {
-    "workingTime": 1500,
-    "breakTime": 300
+  "workCycleSettings": {
+    "timeSettings": {
+      "workingTime": 1500,
+      "shortBreakTime": 300,
+      "longBreakTime": 1200
+    },
+    "workSessionsToLongBreak": 4
   }
 }

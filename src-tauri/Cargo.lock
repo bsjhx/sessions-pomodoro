@@ -66,12 +66,23 @@ checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
 name = "app"
 version = "0.1.0"
 dependencies = [
+ "assertor",
+ "rand 0.8.5",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
  "tauri-plugin-store",
  "uuid",
+]
+
+[[package]]
+name = "assertor"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71da9fbad72fe17f4904c6dfe0cc9988cec215ed69d30ff278b1a475e868763d"
+dependencies = [
+ "num-traits",
 ]
 
 [[package]]

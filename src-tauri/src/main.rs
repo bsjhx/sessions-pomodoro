@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use crate::application_context::ApplicationContext;
-use crate::configuration::TimeSettings;
+use crate::configuration::WorkCycleSettings;
 use crate::work_cycle::facade::{end_current_session, finish_cycle, get_initial_time, start_cycle};
 use core::default::Default;
 use std::env;
@@ -37,11 +37,11 @@ fn main() {
             let a: State<AppState> = app.state();
             let mut a = a.application_context.lock().unwrap();
 
-            let time_settings = store.get("timeSettings").unwrap().to_string();
-            let time_settings: TimeSettings =
-                serde_json::from_str(&time_settings.to_string()).unwrap();
+            let work_cycle_settings = store.get("workCycleSettings").unwrap().to_string();
+            let work_cycle_settings: WorkCycleSettings =
+                serde_json::from_str(&work_cycle_settings.to_string()).unwrap();
 
-            a.time_settings = time_settings;
+            a.settings = work_cycle_settings;
 
             Ok(())
         })

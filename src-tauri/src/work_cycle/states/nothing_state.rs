@@ -1,5 +1,5 @@
 use crate::work_cycle::states::working_time_state::WorkingTimeState;
-use crate::work_cycle::State;
+use crate::work_cycle::{State, WorkCycle};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -11,7 +11,7 @@ impl State for NothingState {
         "NothingState".to_string()
     }
 
-    fn start_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync> {
+    fn start_cycle(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
         Box::new(WorkingTimeState)
     }
 
@@ -19,7 +19,7 @@ impl State for NothingState {
         self
     }
 
-    fn end(self: Box<Self>) -> Box<dyn State + Send + Sync> {
+    fn end(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
         self
     }
 }
@@ -28,24 +28,25 @@ impl State for NothingState {
 mod test {
     use crate::configuration::TimeSettings;
     use crate::work_cycle::states::nothing_state::NothingState;
-    use crate::work_cycle::State;
+    use crate::work_cycle::{State, WorkCycle};
 
     #[test]
     fn nothing_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(NothingState);
+        let mut work_cycle = WorkCycle::new(4);
 
         // Act & Assert - finish and start
         let state = state.finish_cycle();
         assert_eq!(state.get_state_name(), "NothingState");
 
-        let state = state.start_cycle();
+        let state = state.start_cycle(&mut work_cycle);
         assert_eq!(state.get_state_name(), "WorkingTimeState");
 
         // Act & Assert - end
         let state = Box::new(NothingState);
 
-        let state = state.end();
+        let state = state.end(&mut work_cycle);
         assert_eq!(state.get_state_name(), "NothingState");
     }
 
@@ -53,7 +54,7 @@ mod test {
     fn nothing_state_should_return_proper_settings() {
         // Arrange
         let state = Box::new(NothingState);
-        let some_time_settings = TimeSettings::new(100, 50);
+        let some_time_settings = TimeSettings::new(100, 50, 75);
 
         // Act & Assert
         assert_eq!(state.get_state_name(), "NothingState");
