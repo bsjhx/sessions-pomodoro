@@ -43,7 +43,7 @@ impl ApplicationContext {
 
     pub fn end_current_session(&mut self) {
         if let Some(s) = self.state.take() {
-            self.state = Some(s.end())
+            self.state = Some(s.end(&mut self.current_work_cycle.as_mut().unwrap()))
         }
     }
 }

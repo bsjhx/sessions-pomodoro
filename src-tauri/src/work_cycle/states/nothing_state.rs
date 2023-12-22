@@ -19,7 +19,7 @@ impl State for NothingState {
         self
     }
 
-    fn end(self: Box<Self>) -> Box<dyn State + Send + Sync> {
+    fn end(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
         self
     }
 }
@@ -46,7 +46,7 @@ mod test {
         // Act & Assert - end
         let state = Box::new(NothingState);
 
-        let state = state.end();
+        let state = state.end(&mut work_cycle);
         assert_eq!(state.get_state_name(), "NothingState");
     }
 

@@ -21,7 +21,7 @@ impl State for LongBreakTimeState {
         Box::new(NothingState)
     }
 
-    fn end(self: Box<Self>) -> Box<dyn State + Send + Sync> {
+    fn end(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
         Box::new(WorkingTimeState)
     }
 
@@ -49,7 +49,7 @@ mod test {
 
         // Act & Assert - end
         let state = Box::new(LongBreakTimeState);
-        let state = state.end();
+        let state = state.end(&mut work_cycle);
         assert_eq!(state.get_state_name(), "WorkingTimeState");
     }
 

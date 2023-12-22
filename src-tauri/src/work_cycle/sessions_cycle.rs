@@ -43,7 +43,7 @@ mod test {
 
     #[test]
     fn after_n_work_sessions_next_break_should_be_long() {
-        // Assume
+        // Arrange
         let mut rng = rand::thread_rng();
         let n = rng.gen_range(5..=20);
         let mut work_cycle = WorkCycle::new(n);

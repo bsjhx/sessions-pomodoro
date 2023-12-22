@@ -1,4 +1,5 @@
 use crate::configuration::TimeSettings;
+use crate::work_cycle::states::long_break_time_state::LongBreakTimeState;
 use crate::work_cycle::states::nothing_state::NothingState;
 use crate::work_cycle::{ShortBreakTimeState, State, WorkCycle};
 use serde::Serialize;
@@ -20,8 +21,14 @@ impl State for WorkingTimeState {
         Box::new(NothingState)
     }
 
-    fn end(self: Box<Self>) -> Box<dyn State + Send + Sync> {
-        Box::new(ShortBreakTimeState)
+    fn end(self: Box<Self>, cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
+        cycle.increment_work_session();
+
+        if cycle.is_next_break_long() {
+            return Box::new(LongBreakTimeState);
+        } else {
+            Box::new(ShortBreakTimeState)
+        }
     }
 
     fn get_duration(&self, time_settings: &TimeSettings) -> i32 {
@@ -50,8 +57,34 @@ mod test {
 
         // Act & Assert - end
         let state = Box::new(WorkingTimeState);
-        let state = state.end();
+        let state = state.end(&mut work_cycle);
         assert_eq!(state.get_state_name(), "ShortBreakTimeState");
+    }
+
+    #[test]
+    fn after_2_work_time_sessions_next_state_should_be_long_break() {
+        // Arrange
+        let state = Box::new(WorkingTimeState);
+        let mut work_cycle = WorkCycle::new(2);
+
+        // Act
+        // Start first working sessions
+        let state = state.start_cycle(&mut work_cycle);
+        assert_eq!(state.get_state_name(), "WorkingTimeState");
+
+        // End first working sessions
+        let state = state.end(&mut work_cycle);
+        assert_eq!(state.get_state_name(), "ShortBreakTimeState");
+
+        // Start second working sessions
+        let state = state.end(&mut work_cycle);
+        assert_eq!(state.get_state_name(), "WorkingTimeState");
+
+        // End second working sessions
+        let state = state.end(&mut work_cycle);
+
+        // Assert that after second working session there is long break
+        assert_eq!(state.get_state_name(), "LongBreakTimeState");
     }
 
     #[test]
