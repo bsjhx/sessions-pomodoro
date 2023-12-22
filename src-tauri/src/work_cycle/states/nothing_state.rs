@@ -11,8 +11,7 @@ impl State for NothingState {
         "NothingState".to_string()
     }
 
-    fn start_cycle(self: Box<Self>, cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
-        cycle.increment_work_session();
+    fn start_cycle(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
         Box::new(WorkingTimeState)
     }
 
@@ -55,7 +54,7 @@ mod test {
     fn nothing_state_should_return_proper_settings() {
         // Arrange
         let state = Box::new(NothingState);
-        let some_time_settings = TimeSettings::new(100, 50);
+        let some_time_settings = TimeSettings::new(100, 50, 75);
 
         // Act & Assert
         assert_eq!(state.get_state_name(), "NothingState");
