@@ -1,7 +1,6 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use crate::application_context::ApplicationContext;
 use crate::configuration::WorkCycleSettings;
 use crate::work_cycle::facade::{end_current_session, finish_cycle, get_initial_time, start_cycle};
 use core::default::Default;
@@ -10,8 +9,8 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::{Manager, State};
 use tauri_plugin_store::StoreBuilder;
+use work_cycle::application_context::ApplicationContext;
 
-mod application_context;
 mod configuration;
 mod work_cycle;
 
