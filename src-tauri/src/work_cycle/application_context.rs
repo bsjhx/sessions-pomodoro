@@ -4,15 +4,16 @@ use crate::work_cycle::{NothingState, State, WorkCycle};
 pub struct ApplicationContext {
     pub state: Option<Box<dyn State + Send + Sync>>,
     pub settings: WorkCycleSettings,
-    pub current_work_cycle: Option<WorkCycle>,
+    pub current_work_cycle: WorkCycle,
 }
 
 impl ApplicationContext {
     pub fn new() -> Self {
+        let settings = WorkCycleSettings::default();
         ApplicationContext {
             state: Some(Box::new(NothingState)),
             settings: WorkCycleSettings::default(),
-            current_work_cycle: None,
+            current_work_cycle: WorkCycle::new(settings.work_sessions_to_long_break),
         }
     }
 
@@ -28,10 +29,8 @@ impl ApplicationContext {
     }
 
     pub fn start_cycle(&mut self) {
-        self.current_work_cycle = Some(WorkCycle::new(self.settings.work_sessions_to_long_break));
-
         if let Some(s) = self.state.take() {
-            self.state = Some(s.start_cycle(&mut self.current_work_cycle.as_mut().unwrap()))
+            self.state = Some(s.start_cycle(&mut self.current_work_cycle))
         }
     }
 
@@ -43,7 +42,7 @@ impl ApplicationContext {
 
     pub fn end_current_session(&mut self) {
         if let Some(s) = self.state.take() {
-            self.state = Some(s.end(&mut self.current_work_cycle.as_mut().unwrap()))
+            self.state = Some(s.end(&mut self.current_work_cycle))
         }
     }
 }
