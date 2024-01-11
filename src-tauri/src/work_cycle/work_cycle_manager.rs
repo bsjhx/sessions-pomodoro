@@ -1,16 +1,16 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 use uuid::Uuid;
 
-pub struct WorkCycle {
+pub struct WorkCycleManager {
     id: Uuid,
     last_state_change: u64,
     work_sessions_until_long_break: u16,
     total_work_sessions_in_cycle: u16,
 }
 
-impl WorkCycle {
+impl WorkCycleManager {
     pub fn new(work_sessions_until_long_break: u16) -> Self {
-        WorkCycle {
+        WorkCycleManager {
             id: Uuid::new_v4(),
             last_state_change: 0,
             work_sessions_until_long_break,
@@ -27,6 +27,10 @@ impl WorkCycle {
             && self.total_work_sessions_in_cycle % self.work_sessions_until_long_break == 0
     }
 
+    pub fn on_state_changed(&mut self) -> Result<(), String> {
+        Ok(())
+    }
+
     pub fn update_last_state_change(&mut self) {
         self.last_state_change = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -37,7 +41,7 @@ impl WorkCycle {
 
 #[cfg(test)]
 mod test {
-    use crate::work_cycle::WorkCycle;
+    use crate::work_cycle::WorkCycleManager;
     use assertor::{assert_that, BooleanAssertion};
     use rand::Rng;
 
@@ -46,7 +50,7 @@ mod test {
         // Arrange
         let mut rng = rand::thread_rng();
         let n = rng.gen_range(5..=20);
-        let mut work_cycle = WorkCycle::new(n);
+        let mut work_cycle = WorkCycleManager::new(n);
 
         // Act
         for _ in 0..n {

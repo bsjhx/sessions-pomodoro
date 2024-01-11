@@ -2,7 +2,7 @@ use crate::configuration::TimeSettings;
 use crate::work_cycle::states::nothing_state::NothingState;
 use crate::work_cycle::states::state_trait::State;
 use crate::work_cycle::states::working_time_state::WorkingTimeState;
-use crate::work_cycle::WorkCycle;
+use crate::work_cycle::WorkCycleManager;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -13,15 +13,18 @@ impl State for LongBreakTimeState {
         "LongBreakTimeState".to_string()
     }
 
-    fn start_cycle(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
+    fn start_cycle(self: Box<Self>, _cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
         self
     }
 
-    fn finish_cycle(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
+    fn finish_cycle(
+        self: Box<Self>,
+        _cycle: &mut WorkCycleManager,
+    ) -> Box<dyn State + Send + Sync> {
         Box::new(NothingState)
     }
 
-    fn end(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
+    fn end(self: Box<Self>, _cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
         Box::new(WorkingTimeState)
     }
 
@@ -38,7 +41,7 @@ mod test {
     fn long_break_time_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(LongBreakTimeState);
-        let mut work_cycle = WorkCycle::new(4);
+        let mut work_cycle = WorkCycleManager::new(4);
 
         // Act & Assert - start and finish
         let state = state.start_cycle(&mut work_cycle);

@@ -1,10 +1,10 @@
 use crate::configuration::WorkCycleSettings;
-use crate::work_cycle::{NothingState, State, WorkCycle};
+use crate::work_cycle::{NothingState, State, WorkCycleManager};
 
 pub struct ApplicationContext {
     pub state: Option<Box<dyn State + Send + Sync>>,
     pub settings: WorkCycleSettings,
-    pub current_work_cycle: WorkCycle,
+    pub current_work_cycle: WorkCycleManager,
 }
 
 impl ApplicationContext {
@@ -13,7 +13,7 @@ impl ApplicationContext {
         ApplicationContext {
             state: Some(Box::new(NothingState)),
             settings: WorkCycleSettings::default(),
-            current_work_cycle: WorkCycle::new(settings.work_sessions_to_long_break),
+            current_work_cycle: WorkCycleManager::new(settings.work_sessions_to_long_break),
         }
     }
 

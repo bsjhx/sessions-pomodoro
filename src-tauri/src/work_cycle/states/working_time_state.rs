@@ -1,7 +1,7 @@
 use crate::configuration::TimeSettings;
 use crate::work_cycle::states::long_break_time_state::LongBreakTimeState;
 use crate::work_cycle::states::nothing_state::NothingState;
-use crate::work_cycle::{ShortBreakTimeState, State, WorkCycle};
+use crate::work_cycle::{ShortBreakTimeState, State, WorkCycleManager};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -13,15 +13,18 @@ impl State for WorkingTimeState {
         "WorkingTimeState".to_string()
     }
 
-    fn start_cycle(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
+    fn start_cycle(self: Box<Self>, _cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
         self
     }
 
-    fn finish_cycle(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
+    fn finish_cycle(
+        self: Box<Self>,
+        _cycle: &mut WorkCycleManager,
+    ) -> Box<dyn State + Send + Sync> {
         Box::new(NothingState)
     }
 
-    fn end(self: Box<Self>, cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
+    fn end(self: Box<Self>, cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
         cycle.increment_work_session();
 
         if cycle.is_next_break_long() {
@@ -40,13 +43,13 @@ impl State for WorkingTimeState {
 mod test {
     use crate::configuration::TimeSettings;
     use crate::work_cycle::states::working_time_state::WorkingTimeState;
-    use crate::work_cycle::{State, WorkCycle};
+    use crate::work_cycle::{State, WorkCycleManager};
 
     #[test]
     fn working_time_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(WorkingTimeState);
-        let mut work_cycle = WorkCycle::new(4);
+        let mut work_cycle = WorkCycleManager::new(4);
 
         // Act & Assert - start and finish
         let state = state.start_cycle(&mut work_cycle);
@@ -65,7 +68,7 @@ mod test {
     fn after_2_work_time_sessions_next_state_should_be_long_break() {
         // Arrange
         let state = Box::new(WorkingTimeState);
-        let mut work_cycle = WorkCycle::new(2);
+        let mut work_cycle = WorkCycleManager::new(2);
 
         // Act
         // Start first working sessions
