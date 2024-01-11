@@ -36,7 +36,7 @@ impl ApplicationContext {
 
     pub fn finish_cycle(&mut self) {
         if let Some(s) = self.state.take() {
-            self.state = Some(s.finish_cycle())
+            self.state = Some(s.finish_cycle(&mut self.current_work_cycle))
         }
     }
 

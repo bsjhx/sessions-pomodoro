@@ -15,7 +15,7 @@ impl State for NothingState {
         Box::new(WorkingTimeState)
     }
 
-    fn finish_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync> {
+    fn finish_cycle(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
         self
     }
 
@@ -37,7 +37,7 @@ mod test {
         let mut work_cycle = WorkCycle::new(4);
 
         // Act & Assert - finish and start
-        let state = state.finish_cycle();
+        let state = state.finish_cycle(&mut work_cycle);
         assert_eq!(state.get_state_name(), "NothingState");
 
         let state = state.start_cycle(&mut work_cycle);

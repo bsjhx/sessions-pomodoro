@@ -6,7 +6,7 @@ pub trait State {
 
     fn start_cycle(self: Box<Self>, cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync>;
 
-    fn finish_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync>;
+    fn finish_cycle(self: Box<Self>, cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync>;
 
     fn end(self: Box<Self>, cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync>;
 

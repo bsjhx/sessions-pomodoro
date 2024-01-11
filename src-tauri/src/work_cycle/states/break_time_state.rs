@@ -18,7 +18,7 @@ impl State for ShortBreakTimeState {
         self
     }
 
-    fn finish_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync> {
+    fn finish_cycle(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
         Box::new(NothingState)
     }
 
@@ -45,7 +45,7 @@ mod test {
         let state = state.start_cycle(&mut work_cycle);
         assert_eq!(state.get_state_name(), "ShortBreakTimeState");
 
-        let state = state.finish_cycle();
+        let state = state.finish_cycle(&mut work_cycle);
         assert_eq!(state.get_state_name(), "NothingState");
 
         // Act & Assert - end
