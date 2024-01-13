@@ -1,6 +1,6 @@
 use crate::configuration::TimeSettings;
 use crate::work_cycle::states::nothing_state::NothingState;
-use crate::work_cycle::states::state_trait::State;
+use crate::work_cycle::states::state_traits::{State, StateId};
 use crate::work_cycle::states::working_time_state::WorkingTimeState;
 use crate::work_cycle::WorkCycleManager;
 use serde::Serialize;
@@ -8,10 +8,13 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 pub struct ShortBreakTimeState;
 
-// split to Long and Short break
+impl StateId for ShortBreakTimeState {
+    const ID: &'static str = "ShortBreakTimeState";
+}
+
 impl State for ShortBreakTimeState {
     fn get_state_name(&self) -> String {
-        "ShortBreakTimeState".to_string()
+        ShortBreakTimeState::ID.to_string()
     }
 
     fn start_cycle(self: Box<Self>, _cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {

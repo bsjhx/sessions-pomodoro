@@ -14,3 +14,7 @@ pub trait State {
         0
     }
 }
+
+pub trait StateId {
+    const ID: &'static str;
+}

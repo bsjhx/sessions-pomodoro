@@ -1,3 +1,4 @@
+use crate::work_cycle::states::state_traits::StateId;
 use crate::work_cycle::states::working_time_state::WorkingTimeState;
 use crate::work_cycle::{State, WorkCycleManager};
 use serde::Serialize;
@@ -5,13 +6,21 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 pub struct NothingState;
 
+impl StateId for NothingState {
+    const ID: &'static str = "NothingState";
+}
+
 /// Starting point of application, initial value for cycle.
 impl State for NothingState {
     fn get_state_name(&self) -> String {
-        "NothingState".to_string()
+        NothingState::ID.to_string()
     }
 
-    fn start_cycle(self: Box<Self>, _cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
+    fn start_cycle(self: Box<Self>, cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
+        cycle
+            .on_state_changed(WorkingTimeState::ID.to_string())
+            .expect("TODO: panic message");
+
         Box::new(WorkingTimeState)
     }
 

@@ -1,4 +1,4 @@
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use uuid::Uuid;
 
 pub struct WorkCycleManager {
@@ -6,6 +6,18 @@ pub struct WorkCycleManager {
     last_state_change: u64,
     work_sessions_until_long_break: u16,
     total_work_sessions_in_cycle: u16,
+    states_history: Vec<StateHistoryElement>,
+}
+
+struct StateHistoryElement {
+    state_name: String,
+    time: u64,
+}
+
+impl StateHistoryElement {
+    pub fn new(state_name: String, time: u64) -> Self {
+        StateHistoryElement { state_name, time }
+    }
 }
 
 impl WorkCycleManager {
@@ -15,6 +27,7 @@ impl WorkCycleManager {
             last_state_change: 0,
             work_sessions_until_long_break,
             total_work_sessions_in_cycle: 0,
+            states_history: Vec::default(),
         }
     }
 
@@ -27,8 +40,21 @@ impl WorkCycleManager {
             && self.total_work_sessions_in_cycle % self.work_sessions_until_long_break == 0
     }
 
-    pub fn on_state_changed(&mut self) -> Result<(), String> {
+    pub fn on_state_changed(&mut self, state_name: String) -> Result<(), String> {
+        let since_the_epoch = Self::get_current_time_in_secs();
+
+        self.states_history.push(StateHistoryElement::new(
+            state_name,
+            since_the_epoch.as_secs(),
+        ));
+
         Ok(())
+    }
+
+    fn get_current_time_in_secs() -> Duration {
+        let now = SystemTime::now();
+        let since_the_epoch = now.duration_since(UNIX_EPOCH).expect("Time went backwards");
+        since_the_epoch
     }
 
     pub fn update_last_state_change(&mut self) {

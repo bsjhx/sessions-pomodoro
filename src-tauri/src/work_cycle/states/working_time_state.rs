@@ -1,16 +1,22 @@
 use crate::configuration::TimeSettings;
 use crate::work_cycle::states::long_break_time_state::LongBreakTimeState;
 use crate::work_cycle::states::nothing_state::NothingState;
+use crate::work_cycle::states::state_traits::StateId;
 use crate::work_cycle::{ShortBreakTimeState, State, WorkCycleManager};
 use serde::Serialize;
+use std::string::ToString;
 
 #[derive(Debug, Serialize)]
 pub struct WorkingTimeState;
 
+impl StateId for WorkingTimeState {
+    const ID: &'static str = "WorkingTimeState";
+}
+
 /// First state after cycle is started. It means, that user is working.
 impl State for WorkingTimeState {
     fn get_state_name(&self) -> String {
-        "WorkingTimeState".to_string()
+        WorkingTimeState::ID.to_string()
     }
 
     fn start_cycle(self: Box<Self>, _cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
