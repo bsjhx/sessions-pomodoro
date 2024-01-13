@@ -1,9 +1,6 @@
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use uuid::Uuid;
 
 pub struct WorkCycleManager {
-    id: Uuid,
-    last_state_change: u64,
     work_sessions_until_long_break: u16,
     total_work_sessions_in_cycle: u16,
     pub states_history: Vec<StateHistoryElement>,
@@ -28,8 +25,6 @@ impl StateHistoryElement {
 impl WorkCycleManager {
     pub fn new(work_sessions_until_long_break: u16) -> Self {
         WorkCycleManager {
-            id: Uuid::new_v4(),
-            last_state_change: 0,
             work_sessions_until_long_break,
             total_work_sessions_in_cycle: 0,
             states_history: Vec::default(),
@@ -60,13 +55,6 @@ impl WorkCycleManager {
         let now = SystemTime::now();
         let since_the_epoch = now.duration_since(UNIX_EPOCH).expect("Time went backwards");
         since_the_epoch
-    }
-
-    pub fn update_last_state_change(&mut self) {
-        self.last_state_change = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("Time went backwards")
-            .as_secs();
     }
 }
 
@@ -100,7 +88,7 @@ mod test {
         let mut wcm = WorkCycleManager::new(4);
         let mut added_states = vec![];
 
-        for i in 0..50 {
+        for _ in 0..50 {
             let random_state_name: String = thread_rng()
                 .sample_iter(&Alphanumeric)
                 .take(10)
