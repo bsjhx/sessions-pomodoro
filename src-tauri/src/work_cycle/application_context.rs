@@ -8,8 +8,7 @@ pub struct ApplicationContext {
 }
 
 impl ApplicationContext {
-    pub fn new() -> Self {
-        let settings = WorkCycleSettings::default();
+    pub fn new(settings: WorkCycleSettings) -> Self {
         ApplicationContext {
             state: Some(Box::new(NothingState)),
             settings: WorkCycleSettings::default(),
@@ -49,6 +48,6 @@ impl ApplicationContext {
 
 impl Default for ApplicationContext {
     fn default() -> Self {
-        ApplicationContext::new()
+        ApplicationContext::new(WorkCycleSettings::new())
     }
 }
