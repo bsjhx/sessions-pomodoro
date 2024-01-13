@@ -1,15 +1,14 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use crate::configuration::WorkCycleSettings;
 use crate::work_cycle::facade::{end_current_session, finish_cycle, get_initial_time, start_cycle};
+use app::configuration::WorkCycleSettings;
+use app::work_cycle::facade::AppState;
 use core::default::Default;
 use std::env;
 use std::path::PathBuf;
-use std::sync::Mutex;
 use tauri::{Manager, State};
 use tauri_plugin_store::StoreBuilder;
-use work_cycle::application_context::ApplicationContext;
 
 mod configuration;
 mod work_cycle;
@@ -55,8 +54,4 @@ fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
-}
-
-struct AppState {
-    application_context: Mutex<ApplicationContext>,
 }

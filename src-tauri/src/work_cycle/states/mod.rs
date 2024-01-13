@@ -6,6 +6,6 @@ mod working_time_state;
 
 pub use break_time_state::*;
 
-pub use state_traits::State;
+pub use state_traits::*;
 
 pub use nothing_state::NothingState;

@@ -1,5 +1,5 @@
 pub mod application_context;
-pub(crate) mod facade;
+pub mod facade;
 mod states;
 mod work_cycle_manager;
 

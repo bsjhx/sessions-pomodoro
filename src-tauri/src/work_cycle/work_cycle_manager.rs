@@ -70,10 +70,8 @@ impl WorkCycleManager {
 mod test {
     use crate::work_cycle::WorkCycleManager;
     use assertor::{assert_that, BooleanAssertion};
-    use chrono::Utc;
     use rand::distributions::Alphanumeric;
     use rand::{thread_rng, Rng};
-    use serde::de::Unexpected::Str;
 
     #[test]
     fn after_n_work_sessions_next_break_should_be_long() {

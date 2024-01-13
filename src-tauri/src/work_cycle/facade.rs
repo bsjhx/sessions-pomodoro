@@ -1,11 +1,16 @@
-use crate::AppState;
+use crate::work_cycle::application_context::ApplicationContext;
 use serde::Serialize;
+use std::sync::Mutex;
 use tauri::State;
 
 #[derive(Serialize)]
 pub struct CurrentStateResponse {
     state_name: String,
     state_duration: i32,
+}
+
+pub struct AppState {
+    pub application_context: Mutex<ApplicationContext>,
 }
 
 #[tauri::command]

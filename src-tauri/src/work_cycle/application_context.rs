@@ -52,12 +52,3 @@ impl Default for ApplicationContext {
         ApplicationContext::new()
     }
 }
-
-#[cfg(test)]
-mod test {
-
-    #[test]
-    fn test() {
-        assert_eq!(42, 42);
-    }
-}
