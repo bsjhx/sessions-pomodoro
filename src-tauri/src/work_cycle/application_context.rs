@@ -4,7 +4,7 @@ use crate::work_cycle::{NothingState, State, WorkCycleManager};
 pub struct ApplicationContext {
     pub state: Option<Box<dyn State + Send + Sync>>,
     pub settings: WorkCycleSettings,
-    pub current_work_cycle: WorkCycleManager,
+    pub work_cycle_manager: WorkCycleManager,
 }
 
 impl ApplicationContext {
@@ -13,7 +13,7 @@ impl ApplicationContext {
         ApplicationContext {
             state: Some(Box::new(NothingState)),
             settings: WorkCycleSettings::default(),
-            current_work_cycle: WorkCycleManager::new(settings.work_sessions_to_long_break),
+            work_cycle_manager: WorkCycleManager::new(settings.work_sessions_to_long_break),
         }
     }
 
@@ -30,19 +30,19 @@ impl ApplicationContext {
 
     pub fn start_cycle(&mut self) {
         if let Some(s) = self.state.take() {
-            self.state = Some(s.start_cycle(&mut self.current_work_cycle))
+            self.state = Some(s.start_cycle(&mut self.work_cycle_manager))
         }
     }
 
     pub fn finish_cycle(&mut self) {
         if let Some(s) = self.state.take() {
-            self.state = Some(s.finish_cycle(&mut self.current_work_cycle))
+            self.state = Some(s.finish_cycle(&mut self.work_cycle_manager))
         }
     }
 
     pub fn end_current_session(&mut self) {
         if let Some(s) = self.state.take() {
-            self.state = Some(s.end(&mut self.current_work_cycle))
+            self.state = Some(s.end(&mut self.work_cycle_manager))
         }
     }
 }

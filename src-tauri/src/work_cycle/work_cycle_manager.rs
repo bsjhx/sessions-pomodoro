@@ -9,6 +9,7 @@ pub struct WorkCycleManager {
     states_history: Vec<StateHistoryElement>,
 }
 
+// TODO replace time with chrono::DateTime
 struct StateHistoryElement {
     state_name: String,
     time: u64,
@@ -69,7 +70,10 @@ impl WorkCycleManager {
 mod test {
     use crate::work_cycle::WorkCycleManager;
     use assertor::{assert_that, BooleanAssertion};
-    use rand::Rng;
+    use chrono::Utc;
+    use rand::distributions::Alphanumeric;
+    use rand::{thread_rng, Rng};
+    use serde::de::Unexpected::Str;
 
     #[test]
     fn after_n_work_sessions_next_break_should_be_long() {
@@ -87,5 +91,26 @@ mod test {
         // Assert
         // After {n} finished work sessions, next break should be long
         assert_that!(work_cycle.is_next_break_long()).is_true();
+    }
+
+    #[test]
+    fn added_new_states_should_stored_in_vector() {
+        let mut wcm = WorkCycleManager::new(4);
+        let mut added_states = vec![];
+
+        for i in 0..50 {
+            let random_state_name: String = thread_rng()
+                .sample_iter(&Alphanumeric)
+                .take(10)
+                .map(char::from)
+                .collect();
+
+            added_states.push(random_state_name.clone());
+            assert_eq!(wcm.on_state_changed(random_state_name), Ok(()));
+        }
+
+        for (i, state) in wcm.states_history.iter().enumerate() {
+            assert_eq!(state.state_name, added_states[i]);
+        }
     }
 }

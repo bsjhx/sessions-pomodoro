@@ -21,14 +21,19 @@ impl State for ShortBreakTimeState {
         self
     }
 
-    fn finish_cycle(
-        self: Box<Self>,
-        _cycle: &mut WorkCycleManager,
-    ) -> Box<dyn State + Send + Sync> {
+    fn finish_cycle(self: Box<Self>, cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
+        cycle
+            .on_state_changed(NothingState::ID.to_string())
+            .expect("TODO: panic message");
+
         Box::new(NothingState)
     }
 
-    fn end(self: Box<Self>, _cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
+    fn end(self: Box<Self>, cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
+        cycle
+            .on_state_changed(WorkingTimeState::ID.to_string())
+            .expect("TODO: panic message");
+
         Box::new(WorkingTimeState)
     }
 

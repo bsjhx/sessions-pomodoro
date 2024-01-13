@@ -6,6 +6,15 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 pub struct NothingState;
 
+impl NothingState {
+    fn new(cycle: &mut WorkCycleManager) -> Self {
+        cycle
+            .on_state_changed(NothingState::ID.to_string())
+            .expect("todo");
+        NothingState
+    }
+}
+
 impl StateId for NothingState {
     const ID: &'static str = "NothingState";
 }
