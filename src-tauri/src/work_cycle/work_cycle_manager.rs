@@ -6,11 +6,11 @@ pub struct WorkCycleManager {
     last_state_change: u64,
     work_sessions_until_long_break: u16,
     total_work_sessions_in_cycle: u16,
-    states_history: Vec<StateHistoryElement>,
+    pub states_history: Vec<StateHistoryElement>,
 }
 
 // TODO replace time with chrono::DateTime
-struct StateHistoryElement {
+pub struct StateHistoryElement {
     state_name: String,
     time: u64,
 }
@@ -18,6 +18,10 @@ struct StateHistoryElement {
 impl StateHistoryElement {
     pub fn new(state_name: String, time: u64) -> Self {
         StateHistoryElement { state_name, time }
+    }
+
+    pub fn get_name(&self) -> &str {
+        &self.state_name
     }
 }
 

@@ -1,4 +1,5 @@
 use crate::configuration::WorkCycleSettings;
+use crate::work_cycle::work_cycle_manager::StateHistoryElement;
 use crate::work_cycle::{NothingState, State, WorkCycleManager};
 
 pub struct ApplicationContext {
@@ -43,6 +44,10 @@ impl ApplicationContext {
         if let Some(s) = self.state.take() {
             self.state = Some(s.end(&mut self.work_cycle_manager))
         }
+    }
+
+    pub fn get_current_history(&self) -> &Vec<StateHistoryElement> {
+        &self.work_cycle_manager.states_history
     }
 }
 
