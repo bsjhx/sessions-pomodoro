@@ -26,7 +26,7 @@ impl WorkCycleManager {
     pub fn new(work_sessions_until_long_break: u16) -> Self {
         WorkCycleManager {
             work_sessions_until_long_break,
-            total_work_sessions_in_cycle: 4,
+            total_work_sessions_in_cycle: 0,
             states_history: Vec::default(),
         }
     }
@@ -68,7 +68,7 @@ mod test {
     #[test]
     fn after_n_work_sessions_next_break_should_be_long() {
         // Arrange
-        let mut rng = rand::thread_rng();
+        let mut rng = thread_rng();
         let n = rng.gen_range(5..=20);
         let mut work_cycle = WorkCycleManager::new(n);
 

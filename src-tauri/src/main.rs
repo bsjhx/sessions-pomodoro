@@ -9,7 +9,6 @@ use app::work_cycle::application_context::ApplicationContext;
 use app::work_cycle::facade::{end_current_session, finish_cycle, get_initial_time, start_cycle};
 use app::{__cmd__end_current_session, db};
 use core::default::Default;
-use diesel::RunQueryDsl;
 use std::env;
 use std::path::PathBuf;
 use std::sync::Mutex;
