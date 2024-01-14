@@ -5,15 +5,15 @@ use app::__cmd__finish_cycle;
 use app::__cmd__get_initial_time;
 use app::__cmd__start_cycle;
 use app::configuration::WorkCycleSettings;
-use app::work_cycle::facade::AppState;
+use app::work_cycle::application_context::ApplicationContext;
 use app::work_cycle::facade::{end_current_session, finish_cycle, get_initial_time, start_cycle};
 use app::{__cmd__end_current_session, db};
 use core::default::Default;
-use diesel::{sql_query, RunQueryDsl};
+use diesel::RunQueryDsl;
 use std::env;
 use std::path::PathBuf;
 use std::sync::Mutex;
-use tauri::{Manager, State};
+use tauri::Manager;
 use tauri_plugin_store::StoreBuilder;
 
 fn main() {
@@ -21,11 +21,7 @@ fn main() {
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
             // ***** DATABASE *****
-            let mut connection = db::init();
-
-            // sql_query("insert into states(state_id, started_time) values ('from here', '2024-01-14 16:52:88');")
-            //     .execute(&mut connection)
-            //     .expect("TODO: panic message");
+            let connection = db::init();
             app.manage(Mutex::new(connection));
             // ***** DATABASE *****
 
@@ -46,19 +42,14 @@ fn main() {
             let mut store = StoreBuilder::new(app.handle(), path).build();
             let _ = store.load();
 
-            let a: State<AppState> = app.state();
-            let mut a = a.application_context.lock().unwrap();
-
             let work_cycle_settings = store.get("workCycleSettings").unwrap().to_string();
             let work_cycle_settings: WorkCycleSettings =
                 serde_json::from_str(&work_cycle_settings.to_string()).unwrap();
 
-            a.settings = work_cycle_settings;
+            let app_context = ApplicationContext::new(work_cycle_settings);
+            app.manage(Mutex::new(app_context));
 
             Ok(())
-        })
-        .manage(AppState {
-            application_context: Default::default(),
         })
         .invoke_handler(tauri::generate_handler![
             start_cycle,
