@@ -44,12 +44,13 @@ impl State for LongBreakTimeState {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::db::MockWorkingCycleDb;
 
     #[test]
     fn long_break_time_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(LongBreakTimeState);
-        let mut work_cycle = WorkCycleManager::new(4);
+        let mut work_cycle = WorkCycleManager::new(4, Box::new(MockWorkingCycleDb::new()));
 
         // Act & Assert - start and finish
         let state = state.start_cycle(&mut work_cycle);

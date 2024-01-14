@@ -48,6 +48,7 @@ impl State for NothingState {
 #[cfg(test)]
 mod test {
     use crate::configuration::TimeSettings;
+    use crate::db::MockWorkingCycleDb;
     use crate::work_cycle::states::nothing_state::NothingState;
     use crate::work_cycle::{State, WorkCycleManager};
 
@@ -55,7 +56,7 @@ mod test {
     fn nothing_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(NothingState);
-        let mut work_cycle = WorkCycleManager::new(4);
+        let mut work_cycle = WorkCycleManager::new(4, Box::new(MockWorkingCycleDb::new()));
 
         // Act & Assert - finish and start
         let state = state.finish_cycle(&mut work_cycle);

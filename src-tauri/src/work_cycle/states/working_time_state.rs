@@ -56,6 +56,7 @@ impl State for WorkingTimeState {
 #[cfg(test)]
 mod test {
     use crate::configuration::TimeSettings;
+    use crate::db::MockWorkingCycleDb;
     use crate::work_cycle::states::working_time_state::WorkingTimeState;
     use crate::work_cycle::{State, WorkCycleManager};
 
@@ -63,7 +64,7 @@ mod test {
     fn working_time_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(WorkingTimeState);
-        let mut work_cycle = WorkCycleManager::new(4);
+        let mut work_cycle = WorkCycleManager::new(4, Box::new(MockWorkingCycleDb::new()));
 
         // Act & Assert - start and finish
         let state = state.start_cycle(&mut work_cycle);
@@ -82,7 +83,7 @@ mod test {
     fn after_2_work_time_sessions_next_state_should_be_long_break() {
         // Arrange
         let state = Box::new(WorkingTimeState);
-        let mut work_cycle = WorkCycleManager::new(2);
+        let mut work_cycle = WorkCycleManager::new(2, Box::new(MockWorkingCycleDb::new()));
 
         // Act
         // Start first working sessions

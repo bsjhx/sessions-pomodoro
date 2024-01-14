@@ -1,4 +1,5 @@
 use crate::configuration::WorkCycleSettings;
+use crate::db::MockWorkingCycleDb;
 use crate::work_cycle::work_cycle_manager::StateHistoryElement;
 use crate::work_cycle::{NothingState, State, WorkCycleManager};
 
@@ -13,7 +14,10 @@ impl ApplicationContext {
         ApplicationContext {
             state: Some(Box::new(NothingState)),
             settings,
-            work_cycle_manager: WorkCycleManager::new(settings.work_sessions_to_long_break),
+            work_cycle_manager: WorkCycleManager::new(
+                settings.work_sessions_to_long_break,
+                Box::new(MockWorkingCycleDb::new()),
+            ),
         }
     }
 

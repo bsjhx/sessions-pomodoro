@@ -1,11 +1,18 @@
+use chrono::{DateTime, TimeZone, Utc};
 use std::fs;
 use std::path::Path;
 
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+use mockall::automock;
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+
+#[automock]
+pub trait WorkingCycleDb {
+    fn insert_state(&self, state_id: String, time: DateTime<Utc>);
+}
 
 pub fn init() -> SqliteConnection {
     if !db_file_exists() {

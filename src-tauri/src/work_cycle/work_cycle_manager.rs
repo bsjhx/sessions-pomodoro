@@ -1,9 +1,11 @@
+use crate::db::WorkingCycleDb;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 pub struct WorkCycleManager {
     work_sessions_until_long_break: u16,
     total_work_sessions_in_cycle: u16,
     pub states_history: Vec<StateHistoryElement>,
+    c: Box<dyn WorkingCycleDb + Send>,
 }
 
 // TODO replace time with chrono::DateTime
@@ -23,11 +25,12 @@ impl StateHistoryElement {
 }
 
 impl WorkCycleManager {
-    pub fn new(work_sessions_until_long_break: u16) -> Self {
+    pub fn new(work_sessions_until_long_break: u16, c: Box<dyn WorkingCycleDb + Send>) -> Self {
         WorkCycleManager {
             work_sessions_until_long_break,
             total_work_sessions_in_cycle: 0,
             states_history: Vec::default(),
+            c,
         }
     }
 
@@ -60,6 +63,7 @@ impl WorkCycleManager {
 
 #[cfg(test)]
 mod test {
+    use crate::db::MockWorkingCycleDb;
     use crate::work_cycle::WorkCycleManager;
     use assertor::{assert_that, BooleanAssertion};
     use rand::distributions::Alphanumeric;
@@ -70,7 +74,7 @@ mod test {
         // Arrange
         let mut rng = thread_rng();
         let n = rng.gen_range(5..=20);
-        let mut work_cycle = WorkCycleManager::new(n);
+        let mut work_cycle = WorkCycleManager::new(n, Box::new(MockWorkingCycleDb::new()));
 
         // Act
         for _ in 0..n {
@@ -85,7 +89,7 @@ mod test {
 
     #[test]
     fn added_new_states_should_stored_in_vector() {
-        let mut wcm = WorkCycleManager::new(4);
+        let mut wcm = WorkCycleManager::new(4, Box::new(MockWorkingCycleDb::new()));
         let mut added_states = vec![];
 
         for _ in 0..50 {
