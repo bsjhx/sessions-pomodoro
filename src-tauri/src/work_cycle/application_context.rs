@@ -9,11 +9,11 @@ pub struct ApplicationContext {
 }
 
 impl ApplicationContext {
-    pub fn new(settings: WorkCycleSettings) -> Self {
+    pub fn new(_settings: WorkCycleSettings) -> Self {
         ApplicationContext {
             state: Some(Box::new(NothingState)),
             settings: WorkCycleSettings::default(),
-            work_cycle_manager: WorkCycleManager::new(settings.work_sessions_to_long_break),
+            work_cycle_manager: WorkCycleManager::new(4),
         }
     }
 

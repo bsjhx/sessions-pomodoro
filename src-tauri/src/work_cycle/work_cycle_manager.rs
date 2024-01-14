@@ -26,7 +26,7 @@ impl WorkCycleManager {
     pub fn new(work_sessions_until_long_break: u16) -> Self {
         WorkCycleManager {
             work_sessions_until_long_break,
-            total_work_sessions_in_cycle: 0,
+            total_work_sessions_in_cycle: 4,
             states_history: Vec::default(),
         }
     }
