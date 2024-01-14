@@ -7,16 +7,19 @@ use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
-pub fn init() {
+pub fn init() -> SqliteConnection {
     if !db_file_exists() {
         create_db_file();
     }
 
-    run_migrations();
+    let mut connection = establish_connection();
+
+    run_migrations(&mut connection);
+
+    connection
 }
 
-fn run_migrations() {
-    let mut connection = establish_connection();
+fn run_migrations(connection: &mut SqliteConnection) {
     connection.run_pending_migrations(MIGRATIONS).unwrap();
 }
 

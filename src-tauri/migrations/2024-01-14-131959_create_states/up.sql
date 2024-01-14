@@ -1,5 +1,5 @@
 create table states (
-    id int primary key,
+    id integer primary key,
     state_id tinytext,
     started_time datetime
 );

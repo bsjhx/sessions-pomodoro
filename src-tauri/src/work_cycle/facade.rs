@@ -1,5 +1,9 @@
 use crate::work_cycle::application_context::ApplicationContext;
+use chrono::Utc;
+use diesel::{sql_query, RunQueryDsl, SqliteConnection};
+use rand::{random, Rng};
 use serde::Serialize;
+use std::fmt::format;
 use std::sync::Mutex;
 use tauri::State;
 
@@ -14,7 +18,21 @@ pub struct AppState {
 }
 
 #[tauri::command]
-pub fn start_cycle(state: State<AppState>) -> CurrentStateResponse {
+pub fn start_cycle(
+    state: State<AppState>,
+    connection: State<Mutex<SqliteConnection>>,
+) -> CurrentStateResponse {
+    let mut connection = connection.lock().unwrap();
+
+    let a: u64 = rand::thread_rng().gen();
+    sql_query(format!(
+        "insert into states(state_id, started_time) values ('worked! {}', '{}');",
+        a,
+        Utc::now()
+    ))
+    .execute(&mut *connection)
+    .expect("TODO: panic message");
+
     let mut app = state.application_context.lock().unwrap();
     app.start_cycle();
     CurrentStateResponse {

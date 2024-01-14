@@ -9,8 +9,10 @@ use app::work_cycle::facade::AppState;
 use app::work_cycle::facade::{end_current_session, finish_cycle, get_initial_time, start_cycle};
 use app::{__cmd__end_current_session, db};
 use core::default::Default;
+use diesel::{sql_query, RunQueryDsl};
 use std::env;
 use std::path::PathBuf;
+use std::sync::Mutex;
 use tauri::{Manager, State};
 use tauri_plugin_store::StoreBuilder;
 
@@ -19,7 +21,12 @@ fn main() {
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
             // ***** DATABASE *****
-            db::init();
+            let mut connection = db::init();
+
+            // sql_query("insert into states(state_id, started_time) values ('from here', '2024-01-14 16:52:88');")
+            //     .execute(&mut connection)
+            //     .expect("TODO: panic message");
+            app.manage(Mutex::new(connection));
             // ***** DATABASE *****
 
             // ***** SETTINGS FILE *****
