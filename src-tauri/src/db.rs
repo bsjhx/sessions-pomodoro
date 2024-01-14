@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
-// const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 pub fn init() {
     if !db_file_exists() {
@@ -17,7 +17,7 @@ pub fn init() {
 
 fn run_migrations() {
     let mut connection = establish_connection();
-    // connection.run_pending_migrations(MIGRATIONS).unwrap();
+    connection.run_pending_migrations(MIGRATIONS).unwrap();
 }
 
 fn establish_connection() -> SqliteConnection {

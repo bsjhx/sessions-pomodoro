@@ -1,13 +1,13 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use app::__cmd__end_current_session;
 use app::__cmd__finish_cycle;
 use app::__cmd__get_initial_time;
 use app::__cmd__start_cycle;
 use app::configuration::WorkCycleSettings;
 use app::work_cycle::facade::AppState;
 use app::work_cycle::facade::{end_current_session, finish_cycle, get_initial_time, start_cycle};
+use app::{__cmd__end_current_session, db};
 use core::default::Default;
 use std::env;
 use std::path::PathBuf;
@@ -18,6 +18,11 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
+            // ***** DATABASE *****
+            db::init();
+            // ***** DATABASE *****
+
+            // ***** SETTINGS FILE *****
             let file_path = match env::var("POMODORO_FILES_PATH") {
                 Ok(path) => path,
                 Err(_) => {
@@ -29,6 +34,7 @@ fn main() {
             path.push(file_path);
             path.push("dev_store");
             path.set_extension("json");
+            // ***** SETTINGS FILE *****
 
             let mut store = StoreBuilder::new(app.handle(), path).build();
             let _ = store.load();
