@@ -20,7 +20,7 @@ fn main() {
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
             // ***** DATABASE *****
-            let connection = db::init();
+            let connection = db::init(get_db_path());
             app.manage(Mutex::new(connection));
             // ***** DATABASE *****
 
@@ -58,4 +58,10 @@ fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+fn get_db_path() -> String {
+    let home_dir = dirs::home_dir().unwrap();
+    // TODO move this dir path to some global config
+    home_dir.to_str().unwrap().to_string() + "/.config/sessions-pomodoro/database.sqlite"
 }

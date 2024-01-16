@@ -9,6 +9,8 @@ fn application_context_current_state_should_be_ok() {
     settings.work_sessions_to_long_break = 2;
     let mut application_context = ApplicationContext::new(settings);
 
+    // init testable db
+
     assert_eq!(
         application_context.get_current_state_name(),
         NothingState::ID

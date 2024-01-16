@@ -30,12 +30,12 @@ impl WorkingCycleDb for WorkingCycleDbSqliteImpl {
     }
 }
 
-pub fn init() -> SqliteConnection {
-    if !db_file_exists() {
-        create_db_file();
+pub fn init(db_path: String) -> SqliteConnection {
+    if !db_file_exists(&db_path) {
+        create_db_file(&db_path);
     }
 
-    let mut connection = establish_connection();
+    let mut connection = establish_connection(&db_path);
 
     run_migrations(&mut connection);
 
@@ -46,16 +46,15 @@ fn run_migrations(connection: &mut SqliteConnection) {
     connection.run_pending_migrations(MIGRATIONS).unwrap();
 }
 
-fn establish_connection() -> SqliteConnection {
-    let db_path = "sqlite://".to_string() + get_db_path().as_str();
+fn establish_connection(db_path: &str) -> SqliteConnection {
+    let db_path = format!("sqlite://{}", db_path);
 
     SqliteConnection::establish(&db_path)
         .unwrap_or_else(|_| panic!("Error connecting to {}", db_path))
 }
 
-fn create_db_file() {
-    let db_path = get_db_path();
-    let db_dir = Path::new(&db_path).parent().unwrap();
+fn create_db_file(db_path: &str) {
+    let db_dir = Path::new(db_path).parent().unwrap();
 
     if !db_dir.exists() {
         fs::create_dir_all(db_dir).unwrap();
@@ -64,15 +63,8 @@ fn create_db_file() {
     fs::File::create(db_path).unwrap();
 }
 
-fn db_file_exists() -> bool {
-    let db_path = get_db_path();
+fn db_file_exists(db_path: &str) -> bool {
     Path::new(&db_path).exists()
-}
-
-fn get_db_path() -> String {
-    let home_dir = dirs::home_dir().unwrap();
-    // TODO move this dir path to some global config
-    home_dir.to_str().unwrap().to_string() + "/.config/sessions-pomodoro/database.sqlite"
 }
 
 #[cfg(test)]
