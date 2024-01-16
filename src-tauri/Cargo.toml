@@ -25,9 +25,9 @@ uuid = { version = "1.6.1", features = ["v4"] }
 tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 assertor = "0.0.2"
 rand = "0.8.5"
-chrono = "0.4.31"
+chrono = { version = "0.4.31", features = ["serde", "rustc-serialize"] }
 dirs = "5.0.1"
-diesel = { version = "2.1.4", features = ["sqlite"] }
+diesel = { version = "2.1.4", features = ["sqlite", "chrono"] }
 diesel_migrations = "2.1.0"
 mockall = "0.12.1"
 

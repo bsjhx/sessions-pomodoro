@@ -1,13 +1,12 @@
 use app::configuration::WorkCycleSettings;
-use app::db;
+use app::db::States;
+use app::schema::states::dsl::*;
 use app::work_cycle::application_context::ApplicationContext;
 use app::work_cycle::{LongBreakTimeState, NothingState, WorkingTimeState};
 use app::work_cycle::{ShortBreakTimeState, StateId};
-use diesel::{connection, Connection, SqliteConnection};
+use diesel::prelude::*;
+use diesel::{Connection, RunQueryDsl, SqliteConnection};
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
-use rand::distributions::Alphanumeric;
-use rand::{thread_rng, Rng};
-use std::fs;
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
@@ -15,10 +14,10 @@ const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 fn application_context_current_state_should_be_ok() {
     // Given
     let settings = create_test_settings();
-    let connection = init_test_database();
+    let mut connection = init_test_database();
     let mut application_context = ApplicationContext::new(settings, connection);
 
-    // When & then
+    // When
     assert_eq!(
         application_context.get_current_state_name(),
         NothingState::ID
@@ -65,6 +64,23 @@ fn application_context_current_state_should_be_ok() {
         application_context.get_current_state_name(),
         NothingState::ID
     );
+
+    // Then
+    let query = "SELECT id, state_id FROM states";
+
+    // Execute the raw SQL query and map results to HashMap
+    // let results = sql_query(query)
+    //     .load(&mut connection)
+    //     .expect("Error executing raw SQL query.");
+    // println!("{:?}", results);
+    let results = states
+        .select(States::as_select())
+        .load(&mut connection)
+        .expect("Error loading posts");
+
+    for result in results {
+        println!("Bomba {:?}", result);
+    }
 }
 
 #[test]

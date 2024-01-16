@@ -330,6 +330,7 @@ dependencies = [
  "iana-time-zone",
  "js-sys",
  "num-traits",
+ "rustc-serialize",
  "serde",
  "wasm-bindgen",
  "windows-targets 0.48.5",
@@ -599,6 +600,7 @@ version = "2.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "62c6fcf842f17f8c78ecf7c81d75c5ce84436b41ee07e03f490fbb5f5a8731d8"
 dependencies = [
+ "chrono",
  "diesel_derives",
  "libsqlite3-sys",
  "time",
@@ -2431,6 +2433,12 @@ name = "rustc-demangle"
 version = "0.1.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d626bb9dae77e28219937af045c257c28bfd3f69333c512553507f5f9798cb76"
+
+[[package]]
+name = "rustc-serialize"
+version = "0.3.25"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe834bc780604f4674073badbad26d7219cadfb4a2275802db12cbae17498401"
 
 [[package]]
 name = "rustc_version"

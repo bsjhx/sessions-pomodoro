@@ -1,7 +1,8 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDate, NaiveDateTime, Utc};
 use std::fs;
 use std::path::Path;
 
+use crate::schema::states::dsl::states;
 use diesel::prelude::*;
 use diesel::sql_query;
 use diesel::sqlite::SqliteConnection;
@@ -9,6 +10,14 @@ use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use mockall::automock;
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+
+#[derive(Debug, Queryable, Selectable)]
+#[diesel(table_name = crate::schema::states)]
+pub struct States {
+    pub id: Option<i32>,
+    pub state_id: Option<String>,
+    pub started_time: Option<NaiveDateTime>,
+}
 
 #[automock]
 pub trait WorkingCycleDb {
