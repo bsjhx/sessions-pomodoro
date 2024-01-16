@@ -20,8 +20,8 @@ fn main() {
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
             // ***** DATABASE *****
-            let connection = db::init(get_db_path());
-            app.manage(Mutex::new(connection));
+            let connection = db::init(get_db_path().as_ref());
+            // app.manage(Mutex::new(connection));
             // ***** DATABASE *****
 
             // ***** SETTINGS FILE *****
@@ -45,7 +45,7 @@ fn main() {
             let work_cycle_settings: WorkCycleSettings =
                 serde_json::from_str(&work_cycle_settings.to_string()).unwrap();
 
-            let app_context = ApplicationContext::new(work_cycle_settings);
+            let app_context = ApplicationContext::new(work_cycle_settings, connection);
             app.manage(Mutex::new(app_context));
 
             Ok(())

@@ -1,7 +1,8 @@
 use crate::configuration::WorkCycleSettings;
-use crate::db::MockWorkingCycleDb;
+use crate::db::WorkingCycleDbSqliteImpl;
 use crate::work_cycle::work_cycle_manager::StateHistoryElement;
 use crate::work_cycle::{NothingState, State, WorkCycleManager};
+use diesel::SqliteConnection;
 
 pub struct ApplicationContext {
     pub state: Option<Box<dyn State + Send + Sync>>,
@@ -10,13 +11,13 @@ pub struct ApplicationContext {
 }
 
 impl ApplicationContext {
-    pub fn new(settings: WorkCycleSettings) -> Self {
+    pub fn new(settings: WorkCycleSettings, connection: SqliteConnection) -> Self {
         ApplicationContext {
             state: Some(Box::new(NothingState)),
             settings,
             work_cycle_manager: WorkCycleManager::new(
                 settings.work_sessions_to_long_break,
-                Box::new(MockWorkingCycleDb::new()),
+                Box::new(WorkingCycleDbSqliteImpl::new(connection)),
             ),
         }
     }
@@ -52,11 +53,5 @@ impl ApplicationContext {
 
     pub fn get_current_history(&self) -> &Vec<StateHistoryElement> {
         &self.work_cycle_manager.states_history
-    }
-}
-
-impl Default for ApplicationContext {
-    fn default() -> Self {
-        ApplicationContext::new(WorkCycleSettings::new())
     }
 }

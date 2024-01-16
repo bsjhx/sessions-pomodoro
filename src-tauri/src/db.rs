@@ -19,10 +19,16 @@ pub struct WorkingCycleDbSqliteImpl {
     connection: SqliteConnection,
 }
 
+impl WorkingCycleDbSqliteImpl {
+    pub fn new(connection: SqliteConnection) -> Self {
+        WorkingCycleDbSqliteImpl { connection }
+    }
+}
+
 impl WorkingCycleDb for WorkingCycleDbSqliteImpl {
     fn insert_state(&mut self, state_id: String, time: DateTime<Utc>) {
         sql_query(format!(
-            "insert into states(state_id, started_time) values ('worked! {}', '{}');",
+            "insert into states(state_id, started_time) values ('{}', '{}');",
             state_id, time
         ))
         .execute(&mut self.connection)
@@ -30,7 +36,7 @@ impl WorkingCycleDb for WorkingCycleDbSqliteImpl {
     }
 }
 
-pub fn init(db_path: String) -> SqliteConnection {
+pub fn init(db_path: &str) -> SqliteConnection {
     if !db_file_exists(&db_path) {
         create_db_file(&db_path);
     }
