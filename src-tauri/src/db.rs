@@ -1,8 +1,9 @@
-use chrono::{DateTime, TimeZone, Utc};
+use chrono::{DateTime, Utc};
 use std::fs;
 use std::path::Path;
 
 use diesel::prelude::*;
+use diesel::sql_query;
 use diesel::sqlite::SqliteConnection;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use mockall::automock;
@@ -11,7 +12,22 @@ const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 #[automock]
 pub trait WorkingCycleDb {
-    fn insert_state(&self, state_id: String, time: DateTime<Utc>);
+    fn insert_state(&mut self, state_id: String, time: DateTime<Utc>);
+}
+
+pub struct WorkingCycleDbSqliteImpl {
+    connection: SqliteConnection,
+}
+
+impl WorkingCycleDb for WorkingCycleDbSqliteImpl {
+    fn insert_state(&mut self, state_id: String, time: DateTime<Utc>) {
+        sql_query(format!(
+            "insert into states(state_id, started_time) values ('worked! {}', '{}');",
+            state_id, time
+        ))
+        .execute(&mut self.connection)
+        .expect("TODO: panic message");
+    }
 }
 
 pub fn init() -> SqliteConnection {
@@ -57,4 +73,16 @@ fn get_db_path() -> String {
     let home_dir = dirs::home_dir().unwrap();
     // TODO move this dir path to some global config
     home_dir.to_str().unwrap().to_string() + "/.config/sessions-pomodoro/database.sqlite"
+}
+
+#[cfg(test)]
+pub(crate) mod common {
+    use crate::db::MockWorkingCycleDb;
+
+    pub fn get_mocked_working_cycle_trait() -> MockWorkingCycleDb {
+        let mut mock = MockWorkingCycleDb::new();
+        mock.expect_insert_state().returning(|_, _| ());
+
+        mock
+    }
 }

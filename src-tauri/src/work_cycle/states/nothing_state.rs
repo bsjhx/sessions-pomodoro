@@ -7,12 +7,12 @@ use serde::Serialize;
 pub struct NothingState;
 
 impl NothingState {
-    fn new(cycle: &mut WorkCycleManager) -> Self {
-        cycle
-            .on_state_changed(NothingState::ID.to_string())
-            .expect("todo");
-        NothingState
-    }
+    // fn create_and_store(cycle: &mut WorkCycleManager) -> Self {
+    //     cycle
+    //         .on_state_changed(NothingState::ID.to_string())
+    //         .expect("todo");
+    //     NothingState
+    // }
 }
 
 impl StateId for NothingState {
@@ -46,9 +46,9 @@ impl State for NothingState {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use crate::configuration::TimeSettings;
-    use crate::db::MockWorkingCycleDb;
+    use crate::db::common::get_mocked_working_cycle_trait;
     use crate::work_cycle::states::nothing_state::NothingState;
     use crate::work_cycle::{State, WorkCycleManager};
 
@@ -56,7 +56,7 @@ mod test {
     fn nothing_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(NothingState);
-        let mut work_cycle = WorkCycleManager::new(4, Box::new(MockWorkingCycleDb::new()));
+        let mut work_cycle = WorkCycleManager::new(4, Box::new(get_mocked_working_cycle_trait()));
 
         // Act & Assert - finish and start
         let state = state.finish_cycle(&mut work_cycle);

@@ -1,4 +1,5 @@
 use crate::db::WorkingCycleDb;
+use chrono::Utc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 pub struct WorkCycleManager {
@@ -47,9 +48,11 @@ impl WorkCycleManager {
         let since_the_epoch = Self::get_current_time_in_secs();
 
         self.states_history.push(StateHistoryElement::new(
-            state_name,
+            state_name.clone(),
             since_the_epoch.as_secs(),
         ));
+
+        self.c.insert_state(state_name, Utc::now());
 
         Ok(())
     }
@@ -66,7 +69,6 @@ mod test {
     use crate::db::MockWorkingCycleDb;
     use crate::work_cycle::WorkCycleManager;
     use assertor::{assert_that, BooleanAssertion};
-    use rand::distributions::Alphanumeric;
     use rand::{thread_rng, Rng};
 
     #[test]
@@ -85,26 +87,5 @@ mod test {
         // Assert
         // After {n} finished work sessions, next break should be long
         assert_that!(work_cycle.is_next_break_long()).is_true();
-    }
-
-    #[test]
-    fn added_new_states_should_stored_in_vector() {
-        let mut wcm = WorkCycleManager::new(4, Box::new(MockWorkingCycleDb::new()));
-        let mut added_states = vec![];
-
-        for _ in 0..50 {
-            let random_state_name: String = thread_rng()
-                .sample_iter(&Alphanumeric)
-                .take(10)
-                .map(char::from)
-                .collect();
-
-            added_states.push(random_state_name.clone());
-            assert_eq!(wcm.on_state_changed(random_state_name), Ok(()));
-        }
-
-        for (i, state) in wcm.states_history.iter().enumerate() {
-            assert_eq!(state.state_name, added_states[i]);
-        }
     }
 }

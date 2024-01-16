@@ -45,13 +45,13 @@ impl State for ShortBreakTimeState {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::db::MockWorkingCycleDb;
+    use crate::db::common::get_mocked_working_cycle_trait;
 
     #[test]
     fn break_time_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(ShortBreakTimeState);
-        let mut work_cycle = WorkCycleManager::new(4, Box::new(MockWorkingCycleDb::new()));
+        let mut work_cycle = WorkCycleManager::new(4, Box::new(get_mocked_working_cycle_trait()));
 
         // Act & Assert - start and finish
         let state = state.start_cycle(&mut work_cycle);
