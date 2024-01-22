@@ -9,7 +9,7 @@ pub fn init_test_envirnment() -> (ApplicationContext, Pool<SqliteConnectionManag
     let pool = init_test_database();
     let pool = pool.clone();
     let conn = pool.get().unwrap();
-    let mut application_context = ApplicationContext::new(settings, conn);
+    let application_context = ApplicationContext::new(settings, conn);
 
     let pool = pool.clone();
     let mut conn = pool.get().unwrap();

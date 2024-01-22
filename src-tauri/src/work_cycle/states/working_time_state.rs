@@ -9,6 +9,15 @@ use std::string::ToString;
 #[derive(Debug, Serialize)]
 pub struct WorkingTimeState;
 
+impl WorkingTimeState {
+    pub fn create_and_store(cycle: &mut WorkCycleManager) -> Self {
+        cycle
+            .on_state_changed(WorkingTimeState::ID.to_string())
+            .expect("TODO: panic message");
+        WorkingTimeState
+    }
+}
+
 impl StateId for WorkingTimeState {
     const ID: &'static str = "WorkingTimeState";
 }
@@ -24,27 +33,16 @@ impl State for WorkingTimeState {
     }
 
     fn finish_cycle(self: Box<Self>, cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
-        cycle
-            .on_state_changed(NothingState::ID.to_string())
-            .expect("TODO: panic message");
-        Box::new(NothingState)
+        Box::new(NothingState::create_and_store(cycle))
     }
 
     fn end(self: Box<Self>, cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
         cycle.increment_work_session();
 
         if cycle.is_next_break_long() {
-            cycle
-                .on_state_changed(LongBreakTimeState::ID.to_string())
-                .expect("TODO: panic message");
-
-            return Box::new(LongBreakTimeState);
+            return Box::new(LongBreakTimeState::create_and_store(cycle));
         } else {
-            cycle
-                .on_state_changed(ShortBreakTimeState::ID.to_string())
-                .expect("TODO: panic message");
-
-            Box::new(ShortBreakTimeState)
+            Box::new(ShortBreakTimeState::create_and_store(cycle))
         }
     }
 

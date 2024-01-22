@@ -7,12 +7,12 @@ use serde::Serialize;
 pub struct NothingState;
 
 impl NothingState {
-    // fn create_and_store(cycle: &mut WorkCycleManager) -> Self {
-    //     cycle
-    //         .on_state_changed(NothingState::ID.to_string())
-    //         .expect("todo");
-    //     NothingState
-    // }
+    pub fn create_and_store(cycle: &mut WorkCycleManager) -> Self {
+        cycle
+            .on_state_changed(NothingState::ID.to_string())
+            .expect("todo");
+        NothingState
+    }
 }
 
 impl StateId for NothingState {
@@ -26,11 +26,7 @@ impl State for NothingState {
     }
 
     fn start_cycle(self: Box<Self>, cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
-        cycle
-            .on_state_changed(WorkingTimeState::ID.to_string())
-            .expect("TODO: panic message");
-
-        Box::new(WorkingTimeState)
+        Box::new(WorkingTimeState::create_and_store(cycle))
     }
 
     fn finish_cycle(

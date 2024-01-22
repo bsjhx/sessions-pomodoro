@@ -8,6 +8,15 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 pub struct LongBreakTimeState;
 
+impl LongBreakTimeState {
+    pub fn create_and_store(cycle: &mut WorkCycleManager) -> Self {
+        cycle
+            .on_state_changed(LongBreakTimeState::ID.to_string())
+            .expect("todo");
+        LongBreakTimeState
+    }
+}
+
 impl StateId for LongBreakTimeState {
     const ID: &'static str = "LongBreakTimeState";
 }
@@ -22,18 +31,11 @@ impl State for LongBreakTimeState {
     }
 
     fn finish_cycle(self: Box<Self>, cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
-        cycle
-            .on_state_changed(NothingState::ID.to_string())
-            .expect("TODO: panic message");
-
-        Box::new(NothingState)
+        Box::new(NothingState::create_and_store(cycle))
     }
 
     fn end(self: Box<Self>, cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
-        cycle
-            .on_state_changed(WorkingTimeState::ID.to_string())
-            .expect("TODO: panic message");
-        Box::new(WorkingTimeState)
+        Box::new(WorkingTimeState::create_and_store(cycle))
     }
 
     fn get_duration(&self, time_settings: &TimeSettings) -> i32 {

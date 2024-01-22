@@ -58,7 +58,7 @@ fn application_context_current_state_should_be_ok() {
 
     // Then
     let pool = pool.clone();
-    let mut connection = pool.get().unwrap();
+    let connection = pool.get().unwrap();
 
     let query = "SELECT id, state_id, started_time FROM states";
     let mut stmt = connection.prepare(query).unwrap();
