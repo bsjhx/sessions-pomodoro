@@ -1,5 +1,5 @@
 use crate::db::WorkingCycleDb;
-use chrono::Utc;
+use chrono::{NaiveDateTime, Utc};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 pub struct WorkCycleManager {

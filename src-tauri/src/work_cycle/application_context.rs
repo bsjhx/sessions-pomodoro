@@ -2,7 +2,8 @@ use crate::configuration::WorkCycleSettings;
 use crate::db::WorkingCycleDbSqliteImpl;
 use crate::work_cycle::work_cycle_manager::StateHistoryElement;
 use crate::work_cycle::{NothingState, State, WorkCycleManager};
-use diesel::SqliteConnection;
+use r2d2::PooledConnection;
+use r2d2_sqlite::SqliteConnectionManager;
 
 pub struct ApplicationContext {
     pub state: Option<Box<dyn State + Send + Sync>>,
@@ -11,7 +12,10 @@ pub struct ApplicationContext {
 }
 
 impl ApplicationContext {
-    pub fn new(settings: WorkCycleSettings, connection: SqliteConnection) -> Self {
+    pub fn new(
+        settings: WorkCycleSettings,
+        connection: PooledConnection<SqliteConnectionManager>,
+    ) -> Self {
         ApplicationContext {
             state: Some(Box::new(NothingState)),
             settings,

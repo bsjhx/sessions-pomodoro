@@ -1,21 +1,33 @@
 use app::configuration::WorkCycleSettings;
 use app::db::States;
-use app::schema::states::dsl::*;
 use app::work_cycle::application_context::ApplicationContext;
 use app::work_cycle::{LongBreakTimeState, NothingState, WorkingTimeState};
 use app::work_cycle::{ShortBreakTimeState, StateId};
-use diesel::prelude::*;
-use diesel::{Connection, RunQueryDsl, SqliteConnection};
-use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
-
-const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+use r2d2::Pool;
+use r2d2_sqlite::SqliteConnectionManager;
 
 #[test]
 fn application_context_current_state_should_be_ok() {
     // Given
     let settings = create_test_settings();
-    let mut connection = init_test_database();
-    let mut application_context = ApplicationContext::new(settings, connection);
+    let mut pool = init_test_database();
+    let pool = pool.clone();
+    let conn = pool.get().unwrap();
+    let mut application_context = ApplicationContext::new(settings, conn);
+
+    let pool = pool.clone();
+    let conn = pool.get().unwrap();
+
+    conn.execute(
+        "create table states (
+    id integer primary key,
+    state_id tinytext,
+    started_time datetime
+);",
+        (),
+    )
+    .unwrap();
 
     // When
     assert_eq!(
@@ -66,61 +78,42 @@ fn application_context_current_state_should_be_ok() {
     );
 
     // Then
-    let query = "SELECT id, state_id FROM states";
+    let query = "SELECT id, state_id, started_time FROM states";
+    let mut stmt = conn.prepare(query).unwrap();
+    let states_iter = stmt
+        .query_map([], |row| {
+            Ok(States {
+                id: row.get(0)?,
+                state_id: row.get(1)?,
+                started_time: row.get(2)?,
+            })
+        })
+        .unwrap();
 
-    // Execute the raw SQL query and map results to HashMap
-    // let results = sql_query(query)
-    //     .load(&mut connection)
-    //     .expect("Error executing raw SQL query.");
-    // println!("{:?}", results);
-    let results = states
-        .select(States::as_select())
-        .load(&mut connection)
-        .expect("Error loading posts");
+    let results: Vec<States> = states_iter.into_iter().map(|s| s.unwrap()).collect();
 
-    for result in results {
-        println!("Bomba {:?}", result);
+    assert_eq!(results.len(), 7);
+
+    let expected_states = vec![
+        (1, WorkingTimeState::ID),
+        (2, ShortBreakTimeState::ID),
+        (3, WorkingTimeState::ID),
+        (4, ShortBreakTimeState::ID),
+        (5, WorkingTimeState::ID),
+        (6, LongBreakTimeState::ID),
+        (7, NothingState::ID),
+    ];
+
+    for (i, result) in results.iter().enumerate() {
+        assert_eq!(result.id, Some(expected_states[i].0));
+        assert_eq!(result.state_id, Some(expected_states[i].1.to_string()));
     }
 }
 
-#[test]
-fn application_context_should_keep_history() {
-    // Given
-    let settings = create_test_settings();
-    let connection = init_test_database();
-    let mut application_context = ApplicationContext::new(settings, connection);
-
-    let mut states_expected = vec![];
-    states_expected.push(WorkingTimeState::ID);
-    states_expected.push(ShortBreakTimeState::ID);
-    states_expected.push(WorkingTimeState::ID);
-    states_expected.push(ShortBreakTimeState::ID);
-    states_expected.push(WorkingTimeState::ID);
-    states_expected.push(LongBreakTimeState::ID);
-    states_expected.push(NothingState::ID);
-
-    // When & then
-    application_context.start_cycle();
-    application_context.end_current_session();
-    application_context.end_current_session();
-    application_context.end_current_session();
-    application_context.end_current_session();
-    application_context.end_current_session();
-    application_context.finish_cycle();
-
-    for (i, actual_state) in application_context.get_current_history().iter().enumerate() {
-        assert_eq!(actual_state.get_name(), states_expected[i]);
-    }
-}
-
-fn init_test_database() -> SqliteConnection {
-    let mut connection = SqliteConnection::establish(":memory:")
-        .unwrap_or_else(|_| panic!("Error creating test database"));
-    connection
-        .run_pending_migrations(MIGRATIONS)
-        .expect("Test migration failed");
-
-    connection
+fn init_test_database() -> Pool<SqliteConnectionManager> {
+    let manager = r2d2_sqlite::SqliteConnectionManager::memory();
+    let pool = r2d2::Pool::builder().build(manager).unwrap();
+    pool
 }
 fn create_test_settings() -> WorkCycleSettings {
     let mut settings = WorkCycleSettings::new();
