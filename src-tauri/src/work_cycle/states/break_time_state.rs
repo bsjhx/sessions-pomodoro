@@ -1,29 +1,41 @@
 use crate::configuration::TimeSettings;
 use crate::work_cycle::states::nothing_state::NothingState;
-use crate::work_cycle::states::state_trait::State;
+use crate::work_cycle::states::state_traits::{State, StateId};
 use crate::work_cycle::states::working_time_state::WorkingTimeState;
-use crate::work_cycle::WorkCycle;
+use crate::work_cycle::WorkCycleManager;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 pub struct ShortBreakTimeState;
 
-// split to Long and Short break
+impl StateId for ShortBreakTimeState {
+    const ID: &'static str = "ShortBreakTimeState";
+}
+
+impl ShortBreakTimeState {
+    pub fn create_and_store(cycle: &mut WorkCycleManager) -> Self {
+        cycle
+            .on_state_changed(ShortBreakTimeState::ID.to_string())
+            .expect("todo");
+        ShortBreakTimeState
+    }
+}
+
 impl State for ShortBreakTimeState {
     fn get_state_name(&self) -> String {
-        "ShortBreakTimeState".to_string()
+        ShortBreakTimeState::ID.to_string()
     }
 
-    fn start_cycle(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
+    fn start_cycle(self: Box<Self>, _cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
         self
     }
 
-    fn finish_cycle(self: Box<Self>) -> Box<dyn State + Send + Sync> {
-        Box::new(NothingState)
+    fn finish_cycle(self: Box<Self>, cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
+        Box::new(NothingState::create_and_store(cycle))
     }
 
-    fn end(self: Box<Self>, _cycle: &mut WorkCycle) -> Box<dyn State + Send + Sync> {
-        Box::new(WorkingTimeState)
+    fn end(self: Box<Self>, cycle: &mut WorkCycleManager) -> Box<dyn State + Send + Sync> {
+        Box::new(WorkingTimeState::create_and_store(cycle))
     }
 
     fn get_duration(&self, time_settings: &TimeSettings) -> i32 {
@@ -34,18 +46,19 @@ impl State for ShortBreakTimeState {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::db::get_mocked_working_cycle_trait;
 
     #[test]
     fn break_time_state_should_be_able_to_change_state() {
         // Arrange
         let state = Box::new(ShortBreakTimeState);
-        let mut work_cycle = WorkCycle::new(4);
+        let mut work_cycle = WorkCycleManager::new(4, Box::new(get_mocked_working_cycle_trait()));
 
         // Act & Assert - start and finish
         let state = state.start_cycle(&mut work_cycle);
         assert_eq!(state.get_state_name(), "ShortBreakTimeState");
 
-        let state = state.finish_cycle();
+        let state = state.finish_cycle(&mut work_cycle);
         assert_eq!(state.get_state_name(), "NothingState");
 
         // Act & Assert - end
