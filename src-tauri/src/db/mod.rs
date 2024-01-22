@@ -1,4 +1,3 @@
 pub mod db_init;
-mod db_migrator;
-
-pub use db_migrator::migrate;
+pub mod db_migrate;
+pub mod working_cycle_db;

@@ -56,7 +56,7 @@ impl State for WorkingTimeState {
 #[cfg(test)]
 mod test {
     use crate::configuration::TimeSettings;
-    use crate::db::db_init::common::get_mocked_working_cycle_trait;
+    use crate::db::working_cycle_db::common::get_mocked_working_cycle_trait;
     use crate::work_cycle::states::working_time_state::WorkingTimeState;
     use crate::work_cycle::{State, WorkCycleManager};
 

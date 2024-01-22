@@ -44,7 +44,7 @@ impl State for LongBreakTimeState {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::db::db_init::common::get_mocked_working_cycle_trait;
+    use crate::db::working_cycle_db::common::get_mocked_working_cycle_trait;
 
     #[test]
     fn long_break_time_state_should_be_able_to_change_state() {
