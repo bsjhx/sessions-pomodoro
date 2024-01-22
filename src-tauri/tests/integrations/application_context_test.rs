@@ -4,8 +4,18 @@ use app::work_cycle::application_context::ApplicationContext;
 use app::work_cycle::{LongBreakTimeState, NothingState, WorkingTimeState};
 use app::work_cycle::{ShortBreakTimeState, StateId};
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+use include_dir::{include_dir, Dir};
+use lazy_static::lazy_static;
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
+use rusqlite_migration::Migrations;
+
+static MIGRATIONS_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/migrations");
+
+lazy_static! {
+    static ref MIGRATIONS: Migrations<'static> =
+        Migrations::from_directory(&MIGRATIONS_DIR).unwrap();
+}
 
 #[test]
 fn application_context_current_state_should_be_ok() {
@@ -17,17 +27,9 @@ fn application_context_current_state_should_be_ok() {
     let mut application_context = ApplicationContext::new(settings, conn);
 
     let pool = pool.clone();
-    let conn = pool.get().unwrap();
+    let mut conn = pool.get().unwrap();
 
-    conn.execute(
-        "create table states (
-    id integer primary key,
-    state_id tinytext,
-    started_time datetime
-);",
-        (),
-    )
-    .unwrap();
+    MIGRATIONS.to_latest(&mut conn).unwrap();
 
     // When
     assert_eq!(
