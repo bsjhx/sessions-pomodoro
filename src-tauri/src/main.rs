@@ -39,7 +39,6 @@ fn main() {
 
             let mut store = StoreBuilder::new(app.handle(), path).build();
             let _ = store.load();
-            println!("store {:?}", store);
 
             let work_cycle_settings = store.get("workCycleSettings").unwrap().to_string();
             let work_cycle_settings: WorkCycleSettings =

@@ -12,7 +12,5 @@ lazy_static! {
 }
 
 pub fn migrate(connection: &mut PooledConnection<SqliteConnectionManager>) {
-    println!("migracja");
     MIGRATIONS.to_latest(connection).unwrap();
-    println!("migracja done");
 }
