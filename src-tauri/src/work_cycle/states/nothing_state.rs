@@ -48,7 +48,7 @@ impl State for NothingState {
 #[cfg(test)]
 mod tests {
     use crate::configuration::TimeSettings;
-    use crate::db::working_cycle_db::common::get_mocked_working_cycle_trait;
+    use crate::db::get_mocked_working_cycle_trait;
     use crate::work_cycle::states::nothing_state::NothingState;
     use crate::work_cycle::{State, WorkCycleManager};
 

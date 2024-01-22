@@ -1,6 +1,6 @@
 use app::configuration::WorkCycleSettings;
-use app::db::db_migrate::migrate;
-use app::db::working_cycle_db::States;
+use app::db::migrate;
+use app::db::States;
 use app::work_cycle::application_context::ApplicationContext;
 use app::work_cycle::{LongBreakTimeState, NothingState, WorkingTimeState};
 use app::work_cycle::{ShortBreakTimeState, StateId};
