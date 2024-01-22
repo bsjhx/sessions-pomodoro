@@ -1,13 +1,14 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use app::__cmd__end_current_session;
 use app::__cmd__finish_cycle;
 use app::__cmd__get_initial_time;
 use app::__cmd__start_cycle;
 use app::configuration::WorkCycleSettings;
+use app::db::db_init;
 use app::work_cycle::application_context::ApplicationContext;
 use app::work_cycle::facade::{end_current_session, finish_cycle, get_initial_time, start_cycle};
-use app::{__cmd__end_current_session, db};
 use core::default::Default;
 use std::env;
 use std::path::PathBuf;
@@ -20,8 +21,7 @@ fn main() {
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
             // ***** DATABASE *****
-            // let connection = db::init(get_db_path().as_ref());
-            // app.manage(Mutex::new(connection));
+            let pool = db_init::init(get_db_path().as_ref());
             // ***** DATABASE *****
 
             // ***** SETTINGS FILE *****
@@ -40,13 +40,16 @@ fn main() {
 
             let mut store = StoreBuilder::new(app.handle(), path).build();
             let _ = store.load();
+            println!("store {:?}", store);
 
             let work_cycle_settings = store.get("workCycleSettings").unwrap().to_string();
             let work_cycle_settings: WorkCycleSettings =
                 serde_json::from_str(&work_cycle_settings.to_string()).unwrap();
 
-            // let app_context = ApplicationContext::new(work_cycle_settings, connection);
-            // app.manage(Mutex::new(app_context));
+            let pool = pool.clone();
+            let connection = pool.get().unwrap();
+            let app_context = ApplicationContext::new(work_cycle_settings, connection);
+            app.manage(Mutex::new(app_context));
 
             Ok(())
         })

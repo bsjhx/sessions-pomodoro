@@ -1,5 +1,5 @@
-use crate::db::WorkingCycleDb;
-use chrono::{NaiveDateTime, Utc};
+use crate::db::db_init::WorkingCycleDb;
+use chrono::Utc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 pub struct WorkCycleManager {
@@ -66,7 +66,7 @@ impl WorkCycleManager {
 
 #[cfg(test)]
 mod test {
-    use crate::db::MockWorkingCycleDb;
+    use crate::db::db_init::MockWorkingCycleDb;
     use crate::work_cycle::WorkCycleManager;
     use assertor::{assert_that, BooleanAssertion};
     use rand::{thread_rng, Rng};

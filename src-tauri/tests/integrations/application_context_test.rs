@@ -1,9 +1,9 @@
 use app::configuration::WorkCycleSettings;
-use app::db::States;
+use app::db::db_init::States;
+use app::db::migrate;
 use app::work_cycle::application_context::ApplicationContext;
 use app::work_cycle::{LongBreakTimeState, NothingState, WorkingTimeState};
 use app::work_cycle::{ShortBreakTimeState, StateId};
-use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use include_dir::{include_dir, Dir};
 use lazy_static::lazy_static;
 use r2d2::Pool;
@@ -21,7 +21,7 @@ lazy_static! {
 fn application_context_current_state_should_be_ok() {
     // Given
     let settings = create_test_settings();
-    let mut pool = init_test_database();
+    let pool = init_test_database();
     let pool = pool.clone();
     let conn = pool.get().unwrap();
     let mut application_context = ApplicationContext::new(settings, conn);
@@ -29,7 +29,7 @@ fn application_context_current_state_should_be_ok() {
     let pool = pool.clone();
     let mut conn = pool.get().unwrap();
 
-    MIGRATIONS.to_latest(&mut conn).unwrap();
+    migrate(&mut conn);
 
     // When
     assert_eq!(

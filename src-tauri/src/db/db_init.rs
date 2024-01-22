@@ -2,6 +2,7 @@ use chrono::{DateTime, Utc};
 use std::fs;
 use std::path::Path;
 
+use crate::db::migrate;
 use mockall::automock;
 use r2d2::{Pool, PooledConnection};
 use r2d2_sqlite::SqliteConnectionManager;
@@ -43,21 +44,18 @@ pub fn init(db_path: &str) -> Pool<SqliteConnectionManager> {
         create_db_file(&db_path);
     }
 
-    let mut pool = create_db_pool(&db_path);
+    let pool = create_db_pool(&db_path);
 
     let pool = pool.clone();
     let mut connection = pool.get().unwrap();
-    run_migrations(&mut connection);
+    migrate(&mut connection);
 
     pool
 }
 
-fn run_migrations(_connection: &mut PooledConnection<SqliteConnectionManager>) {
-    // TODO add migrations
-}
-
 fn create_db_pool(db_path: &str) -> Pool<SqliteConnectionManager> {
-    let db_path = format!("sqlite://{}", db_path);
+    // let db_path = format!("sqlite://{}", db_path);
+    println!("Opening DB on path: [{}]", db_path);
     let manager = SqliteConnectionManager::file(db_path);
     Pool::builder().build(manager).unwrap()
 }
@@ -77,8 +75,8 @@ fn db_file_exists(db_path: &str) -> bool {
 }
 
 #[cfg(test)]
-pub(crate) mod common {
-    use crate::db::MockWorkingCycleDb;
+pub mod common {
+    use crate::db::db_init::MockWorkingCycleDb;
 
     pub fn get_mocked_working_cycle_trait() -> MockWorkingCycleDb {
         let mut mock = MockWorkingCycleDb::new();

@@ -1,5 +1,5 @@
 use crate::configuration::WorkCycleSettings;
-use crate::db::WorkingCycleDbSqliteImpl;
+use crate::db::db_init::WorkingCycleDbSqliteImpl;
 use crate::work_cycle::work_cycle_manager::StateHistoryElement;
 use crate::work_cycle::{NothingState, State, WorkCycleManager};
 use r2d2::PooledConnection;
