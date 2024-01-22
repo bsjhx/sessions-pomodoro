@@ -1,9 +1,9 @@
-use chrono::{DateTime, NaiveDate, NaiveDateTime, Utc};
+use chrono::{DateTime, Utc};
 use std::fs;
 use std::path::Path;
 
 use mockall::automock;
-use r2d2::PooledConnection;
+use r2d2::{Pool, PooledConnection};
 use r2d2_sqlite::SqliteConnectionManager;
 
 pub struct States {
@@ -37,43 +37,44 @@ impl WorkingCycleDb for WorkingCycleDbSqliteImpl {
             .unwrap();
     }
 }
-//
-// pub fn init(db_path: &str) -> SqliteConnection {
-//     if !db_file_exists(&db_path) {
-//         create_db_file(&db_path);
-//     }
-//
-//     let mut connection = establish_connection(&db_path);
-//
-//     run_migrations(&mut connection);
-//
-//     connection
-// }
-//
-// fn run_migrations(connection: &mut SqliteConnection) {
-//     connection.run_pending_migrations(MIGRATIONS).unwrap();
-// }
-//
-// fn establish_connection(db_path: &str) -> SqliteConnection {
-//     let db_path = format!("sqlite://{}", db_path);
-//
-//     SqliteConnection::establish(&db_path)
-//         .unwrap_or_else(|_| panic!("Error connecting to {}", db_path))
-// }
-//
-// fn create_db_file(db_path: &str) {
-//     let db_dir = Path::new(db_path).parent().unwrap();
-//
-//     if !db_dir.exists() {
-//         fs::create_dir_all(db_dir).unwrap();
-//     }
-//
-//     fs::File::create(db_path).unwrap();
-// }
-//
-// fn db_file_exists(db_path: &str) -> bool {
-//     Path::new(&db_path).exists()
-// }
+
+pub fn init(db_path: &str) -> Pool<SqliteConnectionManager> {
+    if !db_file_exists(&db_path) {
+        create_db_file(&db_path);
+    }
+
+    let mut pool = create_db_pool(&db_path);
+
+    let pool = pool.clone();
+    let mut connection = pool.get().unwrap();
+    run_migrations(&mut connection);
+
+    pool
+}
+
+fn run_migrations(_connection: &mut PooledConnection<SqliteConnectionManager>) {
+    // TODO add migrations
+}
+
+fn create_db_pool(db_path: &str) -> Pool<SqliteConnectionManager> {
+    let db_path = format!("sqlite://{}", db_path);
+    let manager = SqliteConnectionManager::file(db_path);
+    Pool::builder().build(manager).unwrap()
+}
+
+fn create_db_file(db_path: &str) {
+    let db_dir = Path::new(db_path).parent().unwrap();
+
+    if !db_dir.exists() {
+        fs::create_dir_all(db_dir).unwrap();
+    }
+
+    fs::File::create(db_path).unwrap();
+}
+
+fn db_file_exists(db_path: &str) -> bool {
+    Path::new(&db_path).exists()
+}
 
 #[cfg(test)]
 pub(crate) mod common {
