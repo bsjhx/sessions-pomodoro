@@ -46,6 +46,7 @@ fn main() {
 
             let pool = pool.clone();
             let connection = pool.get().unwrap();
+
             let app_context = ApplicationContext::new(work_cycle_settings, connection);
             app.manage(Mutex::new(app_context));
 
