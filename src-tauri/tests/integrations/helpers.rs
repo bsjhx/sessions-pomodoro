@@ -1,5 +1,5 @@
-use app::configuration::WorkCycleSettings;
 use app::db::migrate;
+use app::settings::WorkCycleSettings;
 use app::work_cycle::application_context::ApplicationContext;
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;

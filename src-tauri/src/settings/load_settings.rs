@@ -1,4 +1,4 @@
-use crate::configuration::model::ApplicationSettings;
+use crate::settings::model::ApplicationSettings;
 use std::fs;
 use std::fs::File;
 use std::io::BufWriter;

@@ -1,4 +1,4 @@
-use crate::configuration::TimeSettings;
+use crate::settings::TimeSettings;
 use crate::work_cycle::WorkCycleManager;
 
 pub trait State {

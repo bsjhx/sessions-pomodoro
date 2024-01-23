@@ -1,4 +1,4 @@
-use app::configuration;
+use app::settings;
 use assertor::{assert_that, BooleanAssertion, EqualityAssertion};
 use random_string::generate;
 use std::fs;
@@ -14,7 +14,7 @@ fn default_settings_should_be_saved_file() {
     assert_that!(Path::new(test_settings_path).exists()).is_false();
 
     // When saving default settings to file
-    let actual_default_settings = configuration::save_default_settings_to_file(test_settings_path);
+    let actual_default_settings = settings::save_default_settings_to_file(test_settings_path);
     assert_that!(actual_default_settings.is_some()).is_true();
 
     // Then settings are loaded and file is created
@@ -45,10 +45,10 @@ fn settings_should_be_loaded_from_file() {
     assert_that!(Path::new(test_settings_path).exists()).is_false();
 
     // Some default settings are stored
-    let _ = configuration::save_default_settings_to_file(test_settings_path);
+    let _ = settings::save_default_settings_to_file(test_settings_path);
 
     // When loading settings from file
-    let actual_settings = configuration::load_settings_from_file(test_settings_path);
+    let actual_settings = settings::load_settings_from_file(test_settings_path);
 
     // Then
     assert_that!(actual_settings.is_some()).is_true();
