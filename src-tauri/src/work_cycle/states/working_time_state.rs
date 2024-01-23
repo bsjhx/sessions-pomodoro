@@ -1,4 +1,4 @@
-use crate::configuration::TimeSettings;
+use crate::settings::TimeSettings;
 use crate::work_cycle::states::long_break_time_state::LongBreakTimeState;
 use crate::work_cycle::states::nothing_state::NothingState;
 use crate::work_cycle::states::state_traits::StateId;
@@ -53,8 +53,8 @@ impl State for WorkingTimeState {
 
 #[cfg(test)]
 mod test {
-    use crate::configuration::TimeSettings;
     use crate::db::get_mocked_working_cycle_trait;
+    use crate::settings::TimeSettings;
     use crate::work_cycle::states::working_time_state::WorkingTimeState;
     use crate::work_cycle::{State, WorkCycleManager};
 
