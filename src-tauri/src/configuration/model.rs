@@ -58,13 +58,13 @@ impl Default for WorkCycleSettings {
     fn default() -> Self {
         WorkCycleSettings {
             time_settings: Default::default(),
-            work_sessions_to_long_break: 0,
+            work_sessions_to_long_break: 3,
         }
     }
 }
 
 impl Default for TimeSettings {
     fn default() -> Self {
-        TimeSettings::new(25, 5, 15)
+        TimeSettings::new(25 * 60, 5 * 60, 15 * 60)
     }
 }

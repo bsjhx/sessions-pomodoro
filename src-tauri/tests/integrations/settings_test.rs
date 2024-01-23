@@ -26,10 +26,10 @@ fn default_settings_should_be_saved_file() {
         .ends_with(".config/sessions-pomodoro/database.sqlite"))
     .is_true();
     let wcs = actual_default_settings.work_cycle_settings;
-    assert_that!(wcs.work_sessions_to_long_break).is_equal_to(0);
-    assert_that!(wcs.time_settings.working_time).is_equal_to(25);
-    assert_that!(wcs.time_settings.short_break_time).is_equal_to(5);
-    assert_that!(wcs.time_settings.long_break_time).is_equal_to(15);
+    assert_that!(wcs.work_sessions_to_long_break).is_equal_to(3);
+    assert_that!(wcs.time_settings.working_time).is_equal_to(25 * 60);
+    assert_that!(wcs.time_settings.short_break_time).is_equal_to(5 * 60);
+    assert_that!(wcs.time_settings.long_break_time).is_equal_to(15 * 60);
 
     // Remove test settings file
     fs::remove_file(test_settings_path).expect("Test settings file failed to remove");
@@ -59,10 +59,10 @@ fn settings_should_be_loaded_from_file() {
         .ends_with(".config/sessions-pomodoro/database.sqlite"))
     .is_true();
     let wcs = actual_default_settings.work_cycle_settings;
-    assert_that!(wcs.work_sessions_to_long_break).is_equal_to(0);
-    assert_that!(wcs.time_settings.working_time).is_equal_to(25);
-    assert_that!(wcs.time_settings.short_break_time).is_equal_to(5);
-    assert_that!(wcs.time_settings.long_break_time).is_equal_to(15);
+    assert_that!(wcs.work_sessions_to_long_break).is_equal_to(3);
+    assert_that!(wcs.time_settings.working_time).is_equal_to(25 * 60);
+    assert_that!(wcs.time_settings.short_break_time).is_equal_to(5 * 60);
+    assert_that!(wcs.time_settings.long_break_time).is_equal_to(15 * 60);
 
     // Remove test settings file
     fs::remove_file(test_settings_path).expect("Test settings file failed to remove");
