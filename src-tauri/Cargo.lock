@@ -99,6 +99,7 @@ dependencies = [
  "r2d2",
  "r2d2_sqlite",
  "rand 0.8.5",
+ "random-string",
  "rusqlite",
  "rusqlite_migration",
  "serde",
@@ -762,6 +763,15 @@ name = "fallible-streaming-iterator"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7360491ce676a36bf9bb3c56c1aa791658183a54d2744120f27285738d90465a"
+
+[[package]]
+name = "fastrand"
+version = "1.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e51093e27b0797c359783294ca4f0a911c270184cb10f85783b118614a1501be"
+dependencies = [
+ "instant",
+]
 
 [[package]]
 name = "fastrand"
@@ -2373,6 +2383,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "random-string"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f70fd13c3024ae3f17381bb5c4d409c6dc9ea6895c08fa2147aba305bea3c4af"
+dependencies = [
+ "fastrand 1.9.0",
+]
+
+[[package]]
 name = "raw-window-handle"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3148,7 +3167,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ef1adac450ad7f4b3c28589471ade84f25f731a7a0fe30d71dfa9f60fd808e5"
 dependencies = [
  "cfg-if",
- "fastrand",
+ "fastrand 2.0.1",
  "redox_syscall 0.4.1",
  "rustix",
  "windows-sys 0.48.0",

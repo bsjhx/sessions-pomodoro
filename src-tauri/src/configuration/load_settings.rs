@@ -19,7 +19,7 @@ pub fn load_settings_from_file(file_path: &str) -> Option<ApplicationSettings> {
 
 pub fn save_default_settings_to_file(file_path: &str) -> Option<ApplicationSettings> {
     let settings = ApplicationSettings::default();
-    let file = File::create(file_path);
+    let file = File::create(file_path).expect("Creating empty file for default settings failed");
     let mut writer = BufWriter::new(file);
     serde_json::to_writer(&mut writer, &settings).expect("Settings file couldn't be saved");
 
