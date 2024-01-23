@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 pub struct ApplicationSettings {
     pub work_cycle_settings: WorkCycleSettings,
     pub db_file_path: String,
-    pub settings_file_path: String,
 }
 
 #[derive(Serialize, Copy, Clone, Debug, Deserialize)]
@@ -51,7 +50,6 @@ impl Default for ApplicationSettings {
         ApplicationSettings {
             work_cycle_settings: Default::default(),
             db_file_path: format!("{}/.config/sessions-pomodoro/database.sqlite", home_dir),
-            settings_file_path: format!("{}/.config/sessions-pomodoro/settings.json", home_dir),
         }
     }
 }

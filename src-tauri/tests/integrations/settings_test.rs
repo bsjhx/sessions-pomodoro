@@ -22,10 +22,6 @@ fn default_settings_should_be_saved_file() {
 
     let actual_default_settings = actual_default_settings.unwrap();
     assert_that!(actual_default_settings
-        .settings_file_path
-        .ends_with(".config/sessions-pomodoro/settings.json"))
-    .is_true();
-    assert_that!(actual_default_settings
         .db_file_path
         .ends_with(".config/sessions-pomodoro/database.sqlite"))
     .is_true();
@@ -58,10 +54,6 @@ fn settings_should_be_loaded_from_file() {
     assert_that!(actual_settings.is_some()).is_true();
     let actual_default_settings = actual_settings.unwrap();
 
-    assert_that!(actual_default_settings
-        .settings_file_path
-        .ends_with(".config/sessions-pomodoro/settings.json"))
-    .is_true();
     assert_that!(actual_default_settings
         .db_file_path
         .ends_with(".config/sessions-pomodoro/database.sqlite"))
