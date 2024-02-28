@@ -1,5 +1,6 @@
 mod db_init;
 mod db_migrate;
+mod history_db;
 mod working_cycle_db;
 
 pub use db_init::init;
