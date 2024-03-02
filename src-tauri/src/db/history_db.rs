@@ -1,8 +1,8 @@
-use chrono::{Date, DateTime, Utc};
+use chrono::{DateTime, Utc};
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 
-struct StateHistoryItem {
+pub struct StateHistoryItem {
     id: String,
     time: DateTime<Utc>,
 }
