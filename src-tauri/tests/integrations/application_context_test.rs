@@ -1,12 +1,14 @@
 use crate::helpers;
+use crate::helpers::get_all_states_from_db;
 use app::db::States;
 use app::work_cycle::{LongBreakTimeState, NothingState, WorkingTimeState};
 use app::work_cycle::{ShortBreakTimeState, StateId};
+use rusqlite::params;
 
 #[test]
 fn application_context_current_state_should_be_ok() {
     // Given
-    let (mut application_context, pool) = helpers::init_test_envirnment();
+    let (mut application_context, _, pool) = helpers::init_test_environment();
 
     // When
     assert_eq!(
@@ -60,19 +62,7 @@ fn application_context_current_state_should_be_ok() {
     let pool = pool.clone();
     let connection = pool.get().unwrap();
 
-    let query = "SELECT id, state_id, started_time FROM states";
-    let mut stmt = connection.prepare(query).unwrap();
-    let states_iter = stmt
-        .query_map([], |row| {
-            Ok(States {
-                id: row.get(0)?,
-                state_id: row.get(1)?,
-                started_time: row.get(2)?,
-            })
-        })
-        .unwrap();
-
-    let results: Vec<States> = states_iter.into_iter().map(|s| s.unwrap()).collect();
+    let results = get_all_states_from_db(&connection);
 
     assert_eq!(results.len(), 7);
 
