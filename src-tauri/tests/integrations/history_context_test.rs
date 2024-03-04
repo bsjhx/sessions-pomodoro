@@ -1,10 +1,7 @@
 use crate::helpers;
 use crate::helpers::get_all_states_from_db;
-use app::db::States;
 use assertor::{assert_that, EqualityAssertion};
-use chrono::{DateTime, Duration, Timelike, Utc};
-use r2d2::PooledConnection;
-use r2d2_sqlite::SqliteConnectionManager;
+use chrono::{Duration, Timelike, Utc};
 use rand::Rng;
 use rusqlite::params;
 

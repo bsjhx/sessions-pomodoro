@@ -1,9 +1,7 @@
 use crate::helpers;
 use crate::helpers::get_all_states_from_db;
-use app::db::States;
 use app::work_cycle::{LongBreakTimeState, NothingState, WorkingTimeState};
 use app::work_cycle::{ShortBreakTimeState, StateId};
-use rusqlite::params;
 
 #[test]
 fn application_context_current_state_should_be_ok() {

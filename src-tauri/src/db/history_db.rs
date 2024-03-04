@@ -1,8 +1,10 @@
-use chrono::{DateTime, Timelike, Utc};
+use chrono::{DateTime, Utc};
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 use rusqlite::params;
+use serde::Serialize;
 
+#[derive(Serialize)]
 pub struct StateHistoryItem {
     id: String,
     time: DateTime<Utc>,
@@ -29,6 +31,7 @@ impl HistoryStatesDb for HistoryStatesDbSqliteImpl {
         let query =
             "select state_id, started_time from states where started_time between ?1 and ?2";
         let mut stmt = self.connection.prepare(query).unwrap();
+
         let result = stmt
             .query_map(params![from_midnight, to_midnight], |row| {
                 Ok(StateHistoryItem {
