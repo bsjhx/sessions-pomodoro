@@ -12,6 +12,7 @@ use app::work_cycle::{end_current_session, finish_cycle, get_initial_time, start
 use app::{__cmd__end_current_session, db};
 use app::{__cmd__finish_cycle, settings};
 use core::default::Default;
+use std::env;
 use std::sync::Mutex;
 use tauri::Manager;
 
@@ -30,6 +31,12 @@ fn main() {
             let connection = pool.get().unwrap();
             let history_context = HistoryContext::new(connection);
             app.manage(Mutex::new(history_context));
+
+            let enabled = env::var("POMODORO_DEVTOOLS_ENABLED").is_ok();
+            if enabled {
+                let window = app.get_window("main").unwrap();
+                window.open_devtools();
+            }
 
             Ok(())
         })

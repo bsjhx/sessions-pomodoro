@@ -15,8 +15,13 @@
     let progress = 0;
     let additionalProgress = 0;
 
+    let states = [{}];
+
     onMount(async () => {
         initialDuration = await invoke('get_initial_time');
+        states = await invoke('get_today_states');
+        console.log('dssd');
+        console.log(states);
 
         currentState = {
             state_name: 'NothingState',
@@ -110,6 +115,11 @@
                 </div>
             </div>
         </div>
+
+        {#each Object.entries(states) as [, state]}
+            <h1>{state.id}</h1>
+            <p>{new Date(state.time).toLocaleString()}</p>
+        {/each}
 
         <div class="row m-5">
             {#if currentState.state_name === 'NothingState'}
