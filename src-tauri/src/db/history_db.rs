@@ -10,6 +10,23 @@ pub struct StateHistoryItem {
     time: DateTime<Utc>,
 }
 
+impl StateHistoryItem {
+    pub fn new(id: &str, time: DateTime<Utc>) -> Self {
+        StateHistoryItem {
+            id: id.to_string(),
+            time,
+        }
+    }
+
+    pub fn get_id(&self) -> &str {
+        &self.id
+    }
+
+    pub fn get_started_time(&self) -> &DateTime<Utc> {
+        &self.time
+    }
+}
+
 pub trait HistoryStatesDb {
     fn get_states_history_by_date(&self, date: DateTime<Utc>) -> Vec<StateHistoryItem>;
 }
