@@ -1,6 +1,5 @@
 use crate::db::WorkingCycleDbSqliteImpl;
 use crate::settings::WorkCycleSettings;
-use crate::work_cycle::work_cycle_manager::StateHistoryElement;
 use crate::work_cycle::{NothingState, State, WorkCycleManager};
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
@@ -53,9 +52,5 @@ impl ApplicationContext {
         if let Some(s) = self.state.take() {
             self.state = Some(s.end(&mut self.work_cycle_manager))
         }
-    }
-
-    pub fn get_current_history(&self) -> &Vec<StateHistoryElement> {
-        &self.work_cycle_manager.states_history
     }
 }
