@@ -1,9 +1,8 @@
 use crate::helpers;
 use crate::helpers::get_all_states_from_db;
-use app::work_cycle::{LongBreakTimeState, NothingState, StateId, WorkingTimeState};
+use app::work_cycle::{NothingState, StateId, WorkingTimeState};
 use assertor::{assert_that, EqualityAssertion};
 use chrono::{Duration, Timelike, Utc};
-use rand::Rng;
 use rusqlite::params;
 
 #[test]

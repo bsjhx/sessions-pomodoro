@@ -1,4 +1,4 @@
-use crate::db::{HistoryStatesDb, HistoryStatesDbSqliteImpl, StateHistoryItem};
+use crate::db::{HistoryStatesDb, HistoryStatesDbSqliteImpl};
 use crate::history::history_calculator::calculate;
 use chrono::{DateTime, Utc};
 use r2d2::PooledConnection;

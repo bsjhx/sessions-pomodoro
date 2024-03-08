@@ -15,13 +15,15 @@
     let progress = 0;
     let additionalProgress = 0;
 
-    let states = [{}];
+    let todayHistoryResponse = {
+        states: []
+    };
 
     onMount(async () => {
         initialDuration = await invoke('get_initial_time');
-        states = await invoke('get_today_states');
+        todayHistoryResponse = await invoke('get_today_states');
         console.log('dssd');
-        console.log(states);
+        console.log(todayHistoryResponse);
 
         currentState = {
             state_name: 'NothingState',
@@ -116,9 +118,10 @@
             </div>
         </div>
 
-        {#each Object.entries(states) as [, state]}
-            <h1>{state.id}</h1>
-            <p>{new Date(state.time).toLocaleString()}</p>
+        {#each Object.entries(todayHistoryResponse.states) as [, state]}
+            <h1>{state.state_id}</h1>
+            <p>{new Date(state.started_time).toLocaleString()} - {new Date(state.finished_time).toLocaleString()}</p>
+            <p>Length: {state.length_in_seconds}</p>
         {/each}
 
         <div class="row m-5">

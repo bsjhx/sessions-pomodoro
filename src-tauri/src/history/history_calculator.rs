@@ -34,10 +34,10 @@ fn is_nothing_state(state: &StateHistoryItem) -> bool {
 #[cfg(test)]
 mod test {
     use crate::db::StateHistoryItem;
-    use crate::history::history_calculator::{calculate, StateStatisticsDetails};
+    use crate::history::history_calculator::calculate;
     use crate::work_cycle::{NothingState, ShortBreakTimeState, StateId, WorkingTimeState};
     use assertor::{assert_that, EqualityAssertion, VecAssertion};
-    use chrono::{DateTime, Duration, NaiveDate, NaiveDateTime, Utc};
+    use chrono::{DateTime, Duration, Utc};
 
     #[test]
     fn should_process_simple_work_cycle() {

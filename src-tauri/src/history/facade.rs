@@ -1,4 +1,3 @@
-use crate::db::StateHistoryItem;
 use crate::history::history_context::StateStatisticsDetails;
 use crate::history::HistoryContext;
 use std::sync::Mutex;
