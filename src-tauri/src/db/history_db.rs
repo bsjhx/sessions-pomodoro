@@ -4,7 +4,6 @@ use r2d2_sqlite::SqliteConnectionManager;
 use rusqlite::params;
 use serde::Serialize;
 
-#[derive(Serialize)]
 pub struct StateHistoryItem {
     id: String,
     time: DateTime<Utc>,

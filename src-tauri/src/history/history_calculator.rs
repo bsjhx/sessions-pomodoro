@@ -1,22 +1,11 @@
 use crate::db::StateHistoryItem;
-use crate::work_cycle::{NothingState, StateId};
-use chrono::{DateTime, Utc};
-
-#[derive(Debug)]
-pub struct StateStatisticsDetails {
-    total_length_in_minutes: i64,
-    states: Vec<StateStatistics>,
-}
-
-#[derive(Debug)]
-pub struct StateStatistics {
-    state_id: String,
-    started_time: DateTime<Utc>,
-    finished_time: DateTime<Utc>,
-    length_in_seconds: i64,
-}
+use crate::history::history_context::{StateStatistics, StateStatisticsDetails};
+use crate::work_cycle::{NothingState, StateId, WorkingTimeState};
 
 pub fn calculate(history_states: &Vec<StateHistoryItem>) -> StateStatisticsDetails {
+    if history_states.len() == 1 {
+        return StateStatisticsDetails::new(0, vec![]);
+    }
     let mut states: Vec<StateStatistics> = vec![];
     let mut sum = 0;
 
@@ -26,19 +15,16 @@ pub fn calculate(history_states: &Vec<StateHistoryItem>) -> StateStatisticsDetai
             let finished = history_states[i + 1].get_started_time().clone();
             let diff = finished.signed_duration_since(started).num_seconds();
             sum += diff;
-            states.push(StateStatistics {
-                state_id: state.get_id().to_string(),
-                started_time: started,
-                finished_time: finished,
-                length_in_seconds: diff,
-            });
+            states.push(StateStatistics::new(
+                WorkingTimeState::ID,
+                started,
+                finished,
+                diff,
+            ));
         }
     }
 
-    StateStatisticsDetails {
-        total_length_in_minutes: sum,
-        states,
-    }
+    StateStatisticsDetails::new(sum, states)
 }
 
 fn is_nothing_state(state: &StateHistoryItem) -> bool {
