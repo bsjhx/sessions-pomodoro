@@ -55,10 +55,9 @@ fn load_settings() -> ApplicationSettings {
     let settings_path = get_settings_path();
     let settings_path = settings_path.as_str();
     let settings = settings::load_settings_from_file(settings_path);
-    let settings = settings.unwrap_or_else(|| {
+    settings.unwrap_or_else(|| {
         settings::save_default_settings_to_file(settings_path).unwrap_or_default()
-    });
-    settings
+    })
 }
 
 fn get_settings_path() -> String {

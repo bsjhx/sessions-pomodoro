@@ -40,7 +40,7 @@ impl State for WorkingTimeState {
         cycle.increment_work_session();
 
         if cycle.is_next_break_long() {
-            return Box::new(LongBreakTimeState::create_and_store(cycle));
+            Box::new(LongBreakTimeState::create_and_store(cycle))
         } else {
             Box::new(ShortBreakTimeState::create_and_store(cycle))
         }

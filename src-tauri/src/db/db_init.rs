@@ -6,11 +6,11 @@ use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 
 pub fn init(db_path: &str) -> Pool<SqliteConnectionManager> {
-    if !db_file_exists(&db_path) {
-        create_db_file(&db_path);
+    if !db_file_exists(db_path) {
+        create_db_file(db_path);
     }
 
-    let pool = create_db_pool(&db_path);
+    let pool = create_db_pool(db_path);
 
     let pool = pool.clone();
     let mut connection = pool.get().unwrap();
