@@ -11,8 +11,8 @@ pub fn calculate(history_states: &Vec<StateHistoryItem>) -> StateStatisticsDetai
 
     for (i, state) in history_states.iter().enumerate() {
         if !is_nothing_state(state) {
-            let started = state.get_started_time().clone();
-            let finished = history_states[i + 1].get_started_time().clone();
+            let started = *state.get_started_time();
+            let finished = *history_states[i + 1].get_started_time();
             let diff = finished.signed_duration_since(started).num_seconds();
             sum += diff;
             states.push(StateStatistics::new(
