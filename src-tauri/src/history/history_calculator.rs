@@ -2,7 +2,7 @@ use crate::db::StateHistoryItem;
 use crate::history::history_context::{StateStatistics, StateStatisticsDetails};
 use crate::work_cycle::{NothingState, StateId, WorkingTimeState};
 
-pub fn calculate(history_states: &Vec<StateHistoryItem>) -> StateStatisticsDetails {
+pub fn calculate(history_states: &[StateHistoryItem]) -> StateStatisticsDetails {
     if history_states.len() == 1 {
         return StateStatisticsDetails::new(0, vec![]);
     }
