@@ -5,3 +5,7 @@ Start app
 cd src-tauri
 cargo tauri dev
 ```
+
+```shell
+cargo tarpaulin -o Html
+```

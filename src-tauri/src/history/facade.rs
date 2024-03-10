@@ -4,6 +4,7 @@ use std::sync::Mutex;
 use tauri::State;
 
 #[tauri::command]
+#[cfg(not(tarpaulin_include))]
 pub fn get_today_states(state: State<Mutex<HistoryContext>>) -> StateStatisticsDetails {
     let history = state.lock().unwrap();
 

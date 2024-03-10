@@ -10,6 +10,7 @@ pub struct CurrentStateResponse {
 }
 
 #[tauri::command]
+#[cfg(not(tarpaulin_include))]
 pub fn start_cycle(state: State<Mutex<ApplicationContext>>) -> CurrentStateResponse {
     let mut app = state.lock().unwrap();
     app.start_cycle();
@@ -20,6 +21,7 @@ pub fn start_cycle(state: State<Mutex<ApplicationContext>>) -> CurrentStateRespo
 }
 
 #[tauri::command]
+#[cfg(not(tarpaulin_include))]
 pub fn finish_cycle(state: State<Mutex<ApplicationContext>>) -> CurrentStateResponse {
     let mut app = state.lock().unwrap();
     app.finish_cycle();
@@ -30,6 +32,7 @@ pub fn finish_cycle(state: State<Mutex<ApplicationContext>>) -> CurrentStateResp
 }
 
 #[tauri::command]
+#[cfg(not(tarpaulin_include))]
 pub fn end_current_session(state: State<Mutex<ApplicationContext>>) -> CurrentStateResponse {
     let mut app = state.lock().unwrap();
     app.end_current_session();
@@ -40,6 +43,7 @@ pub fn end_current_session(state: State<Mutex<ApplicationContext>>) -> CurrentSt
 }
 
 #[tauri::command]
+#[cfg(not(tarpaulin_include))]
 pub fn get_initial_time(state: State<Mutex<ApplicationContext>>) -> i32 {
     let app = state.lock().unwrap();
     app.settings.time_settings.working_time

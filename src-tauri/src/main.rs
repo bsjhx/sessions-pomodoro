@@ -16,6 +16,7 @@ use std::env;
 use std::sync::Mutex;
 use tauri::Manager;
 
+#[cfg(not(tarpaulin_include))]
 fn main() {
     tauri::Builder::default()
         .setup(|app| {

@@ -2,6 +2,7 @@ use crate::helpers;
 use crate::helpers::get_all_states_from_db;
 use app::work_cycle::{LongBreakTimeState, NothingState, WorkingTimeState};
 use app::work_cycle::{ShortBreakTimeState, StateId};
+use assertor::{assert_that, EqualityAssertion};
 
 #[test]
 fn application_context_current_state_should_be_ok() {
@@ -78,4 +79,36 @@ fn application_context_current_state_should_be_ok() {
         assert_eq!(result.id, Some(expected_states[i].0));
         assert_eq!(result.state_id, Some(expected_states[i].1.to_string()));
     }
+}
+
+#[test]
+fn test_current_state_duration() {
+    let (mut application_context, _, _) = helpers::init_test_environment();
+
+    // Nothing state
+    assert_that!(application_context.get_current_state_duration()).is_equal_to(0);
+
+    // Working state
+    application_context.start_cycle();
+    assert_that!(application_context.get_current_state_duration()).is_equal_to(25 * 60);
+
+    // Short break state
+    application_context.end_current_session();
+    assert_that!(application_context.get_current_state_duration()).is_equal_to(5 * 60);
+
+    // Working state
+    application_context.end_current_session();
+    assert_that!(application_context.get_current_state_duration()).is_equal_to(25 * 60);
+
+    // Short break state
+    application_context.end_current_session();
+    assert_that!(application_context.get_current_state_duration()).is_equal_to(5 * 60);
+
+    // Working state
+    application_context.end_current_session();
+    assert_that!(application_context.get_current_state_duration()).is_equal_to(25 * 60);
+
+    // Long break state
+    application_context.end_current_session();
+    assert_that!(application_context.get_current_state_duration()).is_equal_to(15 * 60);
 }

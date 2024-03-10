@@ -78,7 +78,7 @@ mod test {
         history_states.push(get_state(WorkingTimeState::ID, &now, 60));
 
         let actual = calculate(&history_states);
-        let expected = get_single_work_cycle2(60, now);
+        let expected = get_single_work_cycle_unfinished(60, now);
 
         assert_that!(actual).is_equal_to(expected);
     }
@@ -96,7 +96,10 @@ mod test {
         )
     }
 
-    fn get_single_work_cycle2(total_length: i64, now: DateTime<Utc>) -> StateStatisticsDetails {
+    fn get_single_work_cycle_unfinished(
+        total_length: i64,
+        now: DateTime<Utc>,
+    ) -> StateStatisticsDetails {
         StateStatisticsDetails::new(
             total_length,
             vec![
