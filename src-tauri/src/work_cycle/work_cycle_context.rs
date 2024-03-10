@@ -4,18 +4,18 @@ use crate::work_cycle::{NothingState, State, WorkCycleManager};
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 
-pub struct ApplicationContext {
+pub struct WorkCycleContext {
     pub state: Option<Box<dyn State + Send + Sync>>,
     pub settings: WorkCycleSettings,
     pub work_cycle_manager: WorkCycleManager,
 }
 
-impl ApplicationContext {
+impl WorkCycleContext {
     pub fn new(
         settings: WorkCycleSettings,
         connection: PooledConnection<SqliteConnectionManager>,
     ) -> Self {
-        ApplicationContext {
+        WorkCycleContext {
             state: Some(Box::new(NothingState)),
             settings,
             work_cycle_manager: WorkCycleManager::new(

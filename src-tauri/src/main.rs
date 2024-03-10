@@ -7,7 +7,7 @@ use app::__cmd__start_cycle;
 use app::history::get_today_states;
 use app::history::HistoryContext;
 use app::settings::ApplicationSettings;
-use app::work_cycle::application_context::ApplicationContext;
+use app::work_cycle::work_cycle_context::WorkCycleContext;
 use app::work_cycle::{end_current_session, finish_cycle, get_initial_time, start_cycle};
 use app::{__cmd__end_current_session, db};
 use app::{__cmd__finish_cycle, settings};
@@ -26,7 +26,7 @@ fn main() {
             let pool = pool.clone();
             let connection = pool.get().unwrap();
 
-            let app_context = ApplicationContext::new(settings.work_cycle_settings, connection);
+            let app_context = WorkCycleContext::new(settings.work_cycle_settings, connection);
             app.manage(Mutex::new(app_context));
 
             let connection = pool.get().unwrap();

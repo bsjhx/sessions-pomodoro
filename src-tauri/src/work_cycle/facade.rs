@@ -1,4 +1,4 @@
-use crate::work_cycle::application_context::ApplicationContext;
+use crate::work_cycle::work_cycle_context::WorkCycleContext;
 use serde::Serialize;
 use std::sync::Mutex;
 use tauri::State;
@@ -11,7 +11,7 @@ pub struct CurrentStateResponse {
 
 #[tauri::command]
 #[cfg(not(tarpaulin_include))]
-pub fn start_cycle(state: State<Mutex<ApplicationContext>>) -> CurrentStateResponse {
+pub fn start_cycle(state: State<Mutex<WorkCycleContext>>) -> CurrentStateResponse {
     let mut app = state.lock().unwrap();
     app.start_cycle();
     CurrentStateResponse {
@@ -22,7 +22,7 @@ pub fn start_cycle(state: State<Mutex<ApplicationContext>>) -> CurrentStateRespo
 
 #[tauri::command]
 #[cfg(not(tarpaulin_include))]
-pub fn finish_cycle(state: State<Mutex<ApplicationContext>>) -> CurrentStateResponse {
+pub fn finish_cycle(state: State<Mutex<WorkCycleContext>>) -> CurrentStateResponse {
     let mut app = state.lock().unwrap();
     app.finish_cycle();
     CurrentStateResponse {
@@ -33,7 +33,7 @@ pub fn finish_cycle(state: State<Mutex<ApplicationContext>>) -> CurrentStateResp
 
 #[tauri::command]
 #[cfg(not(tarpaulin_include))]
-pub fn end_current_session(state: State<Mutex<ApplicationContext>>) -> CurrentStateResponse {
+pub fn end_current_session(state: State<Mutex<WorkCycleContext>>) -> CurrentStateResponse {
     let mut app = state.lock().unwrap();
     app.end_current_session();
     CurrentStateResponse {
@@ -44,7 +44,7 @@ pub fn end_current_session(state: State<Mutex<ApplicationContext>>) -> CurrentSt
 
 #[tauri::command]
 #[cfg(not(tarpaulin_include))]
-pub fn get_initial_time(state: State<Mutex<ApplicationContext>>) -> i32 {
+pub fn get_initial_time(state: State<Mutex<WorkCycleContext>>) -> i32 {
     let app = state.lock().unwrap();
     app.settings.time_settings.working_time
 }
