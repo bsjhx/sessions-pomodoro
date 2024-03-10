@@ -5,6 +5,7 @@ use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 use serde::Serialize;
 
+// todo change name to TodayStatesDetails
 #[derive(Debug, Serialize, PartialEq)]
 pub struct StateStatisticsDetails {
     pub total_length_in_minutes: i64,
