@@ -6,7 +6,7 @@ use crate::work_cycle::{NothingState, StateId};
 
 pub fn calculate(history_states: &[StateHistoryItem]) -> StatesDurationsDetails {
     if history_states.len() == 1 {
-        let state = history_states.get(0).unwrap();
+        let state = history_states.first().unwrap();
         return StatesDurationsDetails::new_with_running_state(
             0,
             vec![],
