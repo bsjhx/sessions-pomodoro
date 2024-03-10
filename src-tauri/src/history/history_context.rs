@@ -5,13 +5,13 @@ use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 use serde::Serialize;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, PartialEq)]
 pub struct StateStatisticsDetails {
     pub total_length_in_minutes: i64,
     pub states: Vec<StateStatistics>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, PartialEq)]
 pub struct StateStatistics {
     state_id: String,
     started_time: DateTime<Utc>,
