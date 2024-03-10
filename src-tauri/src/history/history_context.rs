@@ -9,6 +9,7 @@ use serde::Serialize;
 pub struct StatesDurationsDetails {
     total_length_in_minutes: i64,
     states: Vec<StateDurationDetails>,
+    running_state: Option<RunningStateDetails>,
 }
 
 #[derive(Debug, Serialize, PartialEq)]
@@ -19,11 +20,30 @@ pub struct StateDurationDetails {
     length_in_seconds: i64,
 }
 
+#[derive(Debug, Serialize, PartialEq)]
+pub struct RunningStateDetails {
+    state_id: String,
+    started_time: DateTime<Utc>,
+}
+
 impl StatesDurationsDetails {
     pub fn new(total_length: i64, states: Vec<StateDurationDetails>) -> Self {
         StatesDurationsDetails {
             total_length_in_minutes: total_length,
             states,
+            running_state: None,
+        }
+    }
+
+    pub fn new_with_running_state(
+        total_length: i64,
+        states: Vec<StateDurationDetails>,
+        running_state: RunningStateDetails,
+    ) -> Self {
+        StatesDurationsDetails {
+            total_length_in_minutes: total_length,
+            states,
+            running_state: Some(running_state),
         }
     }
 }
@@ -40,6 +60,15 @@ impl StateDurationDetails {
             started_time,
             finished_time,
             length_in_seconds,
+        }
+    }
+}
+
+impl RunningStateDetails {
+    pub fn new(id: &str, started_time: DateTime<Utc>) -> Self {
+        RunningStateDetails {
+            state_id: id.to_string(),
+            started_time,
         }
     }
 }

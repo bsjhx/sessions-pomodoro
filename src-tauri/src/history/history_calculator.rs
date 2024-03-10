@@ -1,19 +1,35 @@
 use crate::db::StateHistoryItem;
-use crate::history::history_context::{StateDurationDetails, StatesDurationsDetails};
+use crate::history::history_context::{
+    RunningStateDetails, StateDurationDetails, StatesDurationsDetails,
+};
 use crate::work_cycle::{NothingState, StateId};
 
 pub fn calculate(history_states: &[StateHistoryItem]) -> StatesDurationsDetails {
     if history_states.len() == 1 {
-        return StatesDurationsDetails::new(0, vec![]);
+        let state = history_states.get(0).unwrap();
+        return StatesDurationsDetails::new_with_running_state(
+            0,
+            vec![],
+            RunningStateDetails::new(state.get_id(), *state.get_started_time()),
+        );
     }
+
     let mut states: Vec<StateDurationDetails> = vec![];
     let mut sum = 0;
 
     for (i, state) in history_states.iter().enumerate() {
         if i == history_states.len() - 1 {
-            // todo apply last state which is not nothing state;
-            return StatesDurationsDetails::new(sum, states);
+            return if !is_nothing_state(state) {
+                StatesDurationsDetails::new_with_running_state(
+                    sum,
+                    states,
+                    RunningStateDetails::new(state.get_id(), *state.get_started_time()),
+                )
+            } else {
+                StatesDurationsDetails::new(sum, states)
+            };
         }
+
         if !is_nothing_state(state) {
             let started = *state.get_started_time();
             let finished = *history_states[i + 1].get_started_time();
@@ -39,7 +55,9 @@ fn is_nothing_state(state: &StateHistoryItem) -> bool {
 mod test {
     use crate::db::StateHistoryItem;
     use crate::history::history_calculator::calculate;
-    use crate::history::history_context::{StateDurationDetails, StatesDurationsDetails};
+    use crate::history::history_context::{
+        RunningStateDetails, StateDurationDetails, StatesDurationsDetails,
+    };
     use crate::work_cycle::{NothingState, ShortBreakTimeState, StateId, WorkingTimeState};
     use assertor::{assert_that, EqualityAssertion};
     use chrono::{DateTime, Duration, Utc};
@@ -64,7 +82,7 @@ mod test {
         let actual = calculate(&history_states);
         let expected = get_single_work_cycle(90, now);
 
-        assert_that!(actual).is_equal_to(expected);
+        assert_eq!(actual, expected);
     }
 
     #[test]
@@ -80,7 +98,7 @@ mod test {
         let actual = calculate(&history_states);
         let expected = get_single_work_cycle_unfinished(60, now);
 
-        assert_that!(actual).is_equal_to(expected);
+        assert_eq!(actual, expected);
     }
 
     fn get_single_work_cycle(total_length: i64, now: DateTime<Utc>) -> StatesDurationsDetails {
@@ -100,7 +118,7 @@ mod test {
         total_length: i64,
         now: DateTime<Utc>,
     ) -> StatesDurationsDetails {
-        StatesDurationsDetails::new(
+        StatesDurationsDetails::new_with_running_state(
             total_length,
             vec![
                 get_state_statistics(now, WorkingTimeState::ID, 0, 10),
@@ -108,6 +126,7 @@ mod test {
                 get_state_statistics(now, WorkingTimeState::ID, 15, 45),
                 get_state_statistics(now, ShortBreakTimeState::ID, 45, 60),
             ],
+            RunningStateDetails::new(WorkingTimeState::ID, now + Duration::seconds(60)),
         )
     }
 

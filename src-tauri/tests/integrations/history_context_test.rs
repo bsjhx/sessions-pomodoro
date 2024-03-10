@@ -36,13 +36,16 @@ fn history_context_should_return_today_states() {
     let states = get_all_states_from_db(&connection);
     assert_that!(states.len()).is_equal_to(4);
 
-    assert_that!(actual).is_equal_to(StatesDurationsDetails::new(
-        50,
-        vec![StateDurationDetails::new(
-            WorkingTimeState::ID,
-            today,
-            today + Duration::seconds(50),
+    assert_eq!(
+        actual,
+        StatesDurationsDetails::new(
             50,
-        )],
-    ));
+            vec![StateDurationDetails::new(
+                WorkingTimeState::ID,
+                today,
+                today + Duration::seconds(50),
+                50,
+            )],
+        )
+    );
 }
