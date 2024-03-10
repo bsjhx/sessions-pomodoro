@@ -1,5 +1,6 @@
 use crate::helpers;
 use crate::helpers::get_all_states_from_db;
+use app::history::{StateDurationDetails, StatesDurationsDetails};
 use app::work_cycle::{NothingState, StateId, WorkingTimeState};
 use assertor::{assert_that, EqualityAssertion};
 use chrono::{Duration, Timelike, Utc};
@@ -29,12 +30,22 @@ fn history_context_should_return_today_states() {
         .unwrap();
 
     // When
-    let today_states = history_context.get_states_history_for_today();
+    let actual = history_context.get_states_history_for_today();
 
     // Then
     let states = get_all_states_from_db(&connection);
     assert_that!(states.len()).is_equal_to(4);
 
-    assert_that!(today_states.states.len()).is_equal_to(1);
-    assert_that!(today_states.total_length_in_minutes).is_equal_to(50);
+    assert_eq!(
+        actual,
+        StatesDurationsDetails::new(
+            50,
+            vec![StateDurationDetails::new(
+                WorkingTimeState::ID,
+                today,
+                today + Duration::seconds(50),
+                50,
+            )],
+        )
+    );
 }

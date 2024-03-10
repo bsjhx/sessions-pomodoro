@@ -1,12 +1,12 @@
 use app::db::{migrate, States};
 use app::history::HistoryContext;
 use app::settings::WorkCycleSettings;
-use app::work_cycle::application_context::ApplicationContext;
+use app::work_cycle::work_cycle_context::WorkCycleContext;
 use r2d2::{Pool, PooledConnection};
 use r2d2_sqlite::SqliteConnectionManager;
 
 pub fn init_test_environment() -> (
-    ApplicationContext,
+    WorkCycleContext,
     HistoryContext,
     Pool<SqliteConnectionManager>,
 ) {
@@ -14,7 +14,7 @@ pub fn init_test_environment() -> (
     let pool = init_test_database();
     let pool = pool.clone();
     let conn = pool.get().unwrap();
-    let application_context = ApplicationContext::new(settings, conn);
+    let work_cycle_context = WorkCycleContext::new(settings, conn);
 
     let conn = pool.get().unwrap();
     let history_context = HistoryContext::new(conn);
@@ -24,7 +24,7 @@ pub fn init_test_environment() -> (
 
     migrate(&mut conn);
 
-    (application_context, history_context, pool)
+    (work_cycle_context, history_context, pool)
 }
 
 pub fn get_all_states_from_db(

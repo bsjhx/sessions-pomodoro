@@ -22,7 +22,6 @@
     onMount(async () => {
         initialDuration = await invoke('get_initial_time');
         todayHistoryResponse = await invoke('get_today_states');
-        console.log('dssd');
         console.log(todayHistoryResponse);
 
         currentState = {
@@ -36,6 +35,7 @@
 
     async function startCycle() {
         currentState = await invoke('start_cycle');
+        todayHistoryResponse = await invoke('get_today_states');
         if (interval === 0) {
             interval = setInterval(onIntervalHandler, timeout);
         }
@@ -60,6 +60,7 @@
 
     async function finishCycle() {
         currentState = await invoke('finish_cycle');
+        todayHistoryResponse = await invoke('get_today_states');
 
         counter = initialDuration;
         timeDisplay = updateClock(counter);
@@ -74,6 +75,7 @@
 
     async function endCurrentSession() {
         currentState = await invoke('end_current_session');
+        todayHistoryResponse = await invoke('get_today_states');
         counter = currentState.state_duration;
         timeDisplay = updateClock(counter);
         clearInterval(interval);
@@ -95,57 +97,71 @@
     function renderTimeNumber(n) {
         return n < 10 ? "".concat('0', n.toString()) : n.toString();
     }
+
+    function getTime(date) {
+        return `${date.getHours()}:${date.getMinutes()}`
+    }
 </script>
 
-<div class="container text-center card mt-4">
-    <div class="card-body mt-2">
-        <div class="row m-3">
-            <div class="col">{currentState.state_name}</div>
-        </div>
-
-        <div class="row m-5">
-            <div class="col"><h1><span class="badge text-bg-info">{timeDisplay}</span></h1></div>
-        </div>
-
-        <div class="mt-2">
-            <div class="progress-stacked">
-                <div class="progress" role="progressbar" aria-label="Segment one" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" style="width: {progress}%">
-                    <div class="progress-bar"></div>
+<div class="container">
+    <div class="row">
+        <div class="container text-center card col m-1">
+            <div class="card-body mt-2">
+                <div class="row m-3">
+                    <div class="col">{currentState.state_name}</div>
                 </div>
-                <div class="progress" role="progressbar" aria-label="Segment two" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: {additionalProgress}%">
-                    <div class="progress-bar bg-success"></div>
+
+                <div class="row m-5">
+                    <div class="col"><h1><span class="badge text-bg-info">{timeDisplay}</span></h1></div>
+                </div>
+
+                <div class="mt-2">
+                    <div class="progress-stacked">
+                        <div class="progress" role="progressbar" aria-label="Segment one" aria-valuenow="15"
+                             aria-valuemin="0" aria-valuemax="100" style="width: {progress}%">
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="progress" role="progressbar" aria-label="Segment two" aria-valuenow="30"
+                             aria-valuemin="0" aria-valuemax="100" style="width: {additionalProgress}%">
+                            <div class="progress-bar bg-success"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row m-5">
+                    {#if currentState.state_name === 'NothingState'}
+                        <div class="col">
+                            <button type="button" class="btn btn-primary" on:click='{startCycle}'>
+                                Start
+                                cycle
+                            </button>
+                        </div>
+                    {/if}
+                    {#if currentState.state_name !== 'NothingState'}
+                        <div class="col">
+                            <button type="button" class="btn btn-danger" on:click="{finishCycle}">
+                                Stop
+                                cycle
+                            </button>
+                        </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-secondary"
+                                    on:click='{endCurrentSession}'>End
+                            </button>
+                        </div>
+                    {/if}
                 </div>
             </div>
         </div>
-
-        {#each Object.entries(todayHistoryResponse.states) as [, state]}
-            <h1>{state.state_id}</h1>
-            <p>{new Date(state.started_time).toLocaleString()} - {new Date(state.finished_time).toLocaleString()}</p>
-            <p>Length: {state.length_in_seconds}</p>
-        {/each}
-
-        <div class="row m-5">
-            {#if currentState.state_name === 'NothingState'}
-                <div class="col">
-                    <button type="button" class="btn btn-primary" on:click='{startCycle}'>
-                        Start
-                        cycle
-                    </button>
-                </div>
-            {/if}
-            {#if currentState.state_name !== 'NothingState'}
-                <div class="col">
-                    <button type="button" class="btn btn-danger" on:click="{finishCycle}">
-                        Stop
-                        cycle
-                    </button>
-                </div>
-                <div class="col">
-                    <button type="button" class="btn btn-secondary"
-                            on:click='{endCurrentSession}'>End
-                    </button>
-                </div>
-            {/if}
+        <div class="text-center card m-1 col">
+            <div class="card-body mt-2">
+                <p>Today's statistics:</p>
+                {#each Object.entries(todayHistoryResponse.states) as [, state]}
+                    <p>{state.state_id}</p>
+                    <p>{getTime(new Date(state.started_time))} - {getTime(new Date(state.finished_time))}</p>
+                    <p>Length: {state.length_in_seconds}</p>
+                {/each}
+            </div>
         </div>
     </div>
 </div>
