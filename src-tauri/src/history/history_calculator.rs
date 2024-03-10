@@ -1,25 +1,25 @@
 use crate::db::StateHistoryItem;
-use crate::history::history_context::{StateStatistics, StateStatisticsDetails};
+use crate::history::history_context::{StateDurationDetails, StatesDurationsDetails};
 use crate::work_cycle::{NothingState, StateId};
 
-pub fn calculate(history_states: &[StateHistoryItem]) -> StateStatisticsDetails {
+pub fn calculate(history_states: &[StateHistoryItem]) -> StatesDurationsDetails {
     if history_states.len() == 1 {
-        return StateStatisticsDetails::new(0, vec![]);
+        return StatesDurationsDetails::new(0, vec![]);
     }
-    let mut states: Vec<StateStatistics> = vec![];
+    let mut states: Vec<StateDurationDetails> = vec![];
     let mut sum = 0;
 
     for (i, state) in history_states.iter().enumerate() {
         if i == history_states.len() - 1 {
             // todo apply last state which is not nothing state;
-            return StateStatisticsDetails::new(sum, states);
+            return StatesDurationsDetails::new(sum, states);
         }
         if !is_nothing_state(state) {
             let started = *state.get_started_time();
             let finished = *history_states[i + 1].get_started_time();
             let diff = finished.signed_duration_since(started).num_seconds();
             sum += diff;
-            states.push(StateStatistics::new(
+            states.push(StateDurationDetails::new(
                 state.get_id(),
                 started,
                 finished,
@@ -28,7 +28,7 @@ pub fn calculate(history_states: &[StateHistoryItem]) -> StateStatisticsDetails 
         }
     }
 
-    StateStatisticsDetails::new(sum, states)
+    StatesDurationsDetails::new(sum, states)
 }
 
 fn is_nothing_state(state: &StateHistoryItem) -> bool {
@@ -39,7 +39,7 @@ fn is_nothing_state(state: &StateHistoryItem) -> bool {
 mod test {
     use crate::db::StateHistoryItem;
     use crate::history::history_calculator::calculate;
-    use crate::history::history_context::{StateStatistics, StateStatisticsDetails};
+    use crate::history::history_context::{StateDurationDetails, StatesDurationsDetails};
     use crate::work_cycle::{NothingState, ShortBreakTimeState, StateId, WorkingTimeState};
     use assertor::{assert_that, EqualityAssertion};
     use chrono::{DateTime, Duration, Utc};
@@ -47,7 +47,7 @@ mod test {
     #[test]
     fn empty_array_should_be_empty() {
         let result = calculate(&vec![]);
-        assert_that!(result).is_equal_to(StateStatisticsDetails::new(0, vec![]));
+        assert_that!(result).is_equal_to(StatesDurationsDetails::new(0, vec![]));
     }
 
     #[test]
@@ -83,8 +83,8 @@ mod test {
         assert_that!(actual).is_equal_to(expected);
     }
 
-    fn get_single_work_cycle(total_length: i64, now: DateTime<Utc>) -> StateStatisticsDetails {
-        StateStatisticsDetails::new(
+    fn get_single_work_cycle(total_length: i64, now: DateTime<Utc>) -> StatesDurationsDetails {
+        StatesDurationsDetails::new(
             total_length,
             vec![
                 get_state_statistics(now, WorkingTimeState::ID, 0, 10),
@@ -99,8 +99,8 @@ mod test {
     fn get_single_work_cycle_unfinished(
         total_length: i64,
         now: DateTime<Utc>,
-    ) -> StateStatisticsDetails {
-        StateStatisticsDetails::new(
+    ) -> StatesDurationsDetails {
+        StatesDurationsDetails::new(
             total_length,
             vec![
                 get_state_statistics(now, WorkingTimeState::ID, 0, 10),
@@ -116,8 +116,8 @@ mod test {
         id: &str,
         seconds_started: i64,
         seconds_finished: i64,
-    ) -> StateStatistics {
-        StateStatistics::new(
+    ) -> StateDurationDetails {
+        StateDurationDetails::new(
             id,
             now + Duration::seconds(seconds_started),
             now + Duration::seconds(seconds_finished),
