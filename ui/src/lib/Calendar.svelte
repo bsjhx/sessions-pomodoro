@@ -3,6 +3,13 @@
 
     export let states = [];
 
+    function getTime(date) {
+        return `${date.getHours()}:${date.getMinutes()}`
+    }
+
+    function calculateGridRowFromDate(date) {
+        return Math.round((date.getHours() * 60 + date.getMinutes()) / 15);
+    }
 </script>
 
 <div>
@@ -28,20 +35,17 @@
                 <div class="dayview-now-marker"></div>
                 <div class="dayview-grid-marker-start"></div>
                 <div class="dayview-gridcell-container">
+
                     <div class="dayview-gridcell">
-                        <div class="dayview-cell" style="grid-row: 5 / 7;">
-                            <div class="dayview-cell-title">Title</div>
-                            <div class="dayview-cell-time">17:00-18:00</div>
-                            <div class="dayview-cell-desc">Description</div>
-                        </div>
-                        <div
-                                class="dayview-cell dayview-cell-extended"
-                                style="grid-row: 7 / 11;"
-                        >
-                            <div class="dayview-cell-title">Title</div>
-                            <div class="dayview-cell-time">17:00-18:00</div>
-                            <div class="dayview-cell-desc">Description</div>
-                        </div>
+                        {#each Object.entries(states) as [, state]}
+                            <div
+                                    class="dayview-cell dayview-cell-extended"
+                                    style="grid-row: {calculateGridRowFromDate(new Date(state.started_time))} / {calculateGridRowFromDate(new Date(state.finished_time))};"
+                            >
+                                <div class="dayview-cell-title">{state.state_id}</div>
+                                <div class="dayview-cell-time">{getTime(new Date(state.started_time))} - {getTime(new Date(state.finished_time))}</div>
+                            </div>
+                        {/each}
                     </div>
                 </div>
                 <div class="dayview-grid-marker-end"></div>

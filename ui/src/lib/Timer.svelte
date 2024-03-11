@@ -158,12 +158,7 @@
             <div class="overflow-auto">
                 <div class="card-body mt-2 anyClass">
                     <p>Today's statistics:</p>
-                    <Calendar></Calendar>
-                    {#each Object.entries(todayHistoryResponse.states) as [, state]}
-                        <p>{state.state_id}</p>
-                        <p>{getTime(new Date(state.started_time))} - {getTime(new Date(state.finished_time))}</p>
-                        <p>Length: {state.length_in_seconds}</p>
-                    {/each}
+                    <Calendar states={todayHistoryResponse.states}></Calendar>
                 </div>
             </div>
         </div>
