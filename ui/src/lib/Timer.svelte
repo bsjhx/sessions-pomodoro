@@ -1,6 +1,7 @@
 <script>
     import {invoke} from '@tauri-apps/api/tauri'
     import {onMount} from "svelte";
+    import Calendar from "$lib/Calendar.svelte";
 
     let interval = 0;
     let timeDisplay = "";
@@ -20,7 +21,7 @@
     };
 
     onMount(async () => {
-        initialDuration = await invoke('get_initial_time');
+        initialDuration =  await invoke('get_initial_time');
         todayHistoryResponse = await invoke('get_today_states');
         console.log(todayHistoryResponse);
 
@@ -154,14 +155,19 @@
             </div>
         </div>
         <div class="text-center card m-1 col">
-            <div class="card-body mt-2">
-                <p>Today's statistics:</p>
-                {#each Object.entries(todayHistoryResponse.states) as [, state]}
-                    <p>{state.state_id}</p>
-                    <p>{getTime(new Date(state.started_time))} - {getTime(new Date(state.finished_time))}</p>
-                    <p>Length: {state.length_in_seconds}</p>
-                {/each}
+            <div class="overflow-auto">
+                <div class="card-body mt-2 anyClass">
+                    <p>Today's statistics:</p>
+                    <Calendar states={todayHistoryResponse.states}></Calendar>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .anyClass {
+        height:80vh;
+        overflow-y: scroll;
+    }
+</style>
