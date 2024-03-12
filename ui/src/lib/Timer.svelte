@@ -21,7 +21,7 @@
     };
 
     onMount(async () => {
-        initialDuration = await invoke('get_initial_time');
+        initialDuration =  await invoke('get_initial_time');
         todayHistoryResponse = await invoke('get_today_states');
         console.log(todayHistoryResponse);
 

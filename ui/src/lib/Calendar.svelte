@@ -1,7 +1,22 @@
 <script>
+    import {onMount} from "svelte";
+
     const HOURS = ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
 
     export let states = [];
+
+    let nowMarkerPosition = '0px';
+
+    onMount(() => {
+        let now = new Date();
+        nowMarkerPosition = `${now.getHours() * 60 + now.getMinutes()}px`
+        setInterval(onIntervalHandler, 10)
+    });
+
+    function onIntervalHandler() {
+        let now = new Date();
+        nowMarkerPosition = `${now.getHours() * 60 + now.getMinutes()}px`
+    }
 
     function getTime(date) {
         return `${date.getHours()}:${date.getMinutes()}`
@@ -19,21 +34,8 @@
             return '#8c847d';
         }
     }
-</script>
 
-<!--<script>-->
-<!--    // assumes post DomContentLoaded-->
-<!--    document.addEventListener("DOMContentLoaded", () => {-->
-<!--        const d = new Date();-->
-<!--        document.querySelector(".dayview-now-marker").style.top =-->
-<!--            (document-->
-<!--                    .querySelector(".dayview-gridcell-container")-->
-<!--                    .getBoundingClientRect().height /-->
-<!--                24) *-->
-<!--            (d.getHours() + d.getMinutes() / 60) +-->
-<!--            "px";-->
-<!--    });-->
-<!--</script>-->
+</script>
 
 <div>
     <div class="dayview-container">
@@ -55,7 +57,7 @@
                         <div class="dayview-grid-tile"></div>
                     {/each}
                 </div>
-                <div class="dayview-now-marker"></div>
+                <div class="dayview-now-marker" style:top="{nowMarkerPosition}"></div>
                 <div class="dayview-grid-marker-start"></div>
                 <div class="dayview-gridcell-container">
 
@@ -208,9 +210,10 @@
         position: absolute;
         z-index: 504;
         border-top: #ea4335 solid 2px;
-        right: 8px;
-        left: 0;
+        right: 10px;
+        left: 8px;
         pointer-events: none;
+        width: 96%;
     }
 
     .dayview-now-marker:after {
@@ -220,8 +223,9 @@
         position: absolute;
         height: 12px;
         margin-inline-start: -6.5px;
-        margin-top: -5px;
+        margin-top: -7px;
         width: 12px;
+        left: 100%;
     }
 
     .dayview-cell {
