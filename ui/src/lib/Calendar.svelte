@@ -7,10 +7,33 @@
         return `${date.getHours()}:${date.getMinutes()}`
     }
 
+    // In calendar view 1 minute = 1 px
     function calculateGridRowFromDate(date) {
-        return Math.round((date.getHours() * 60 + date.getMinutes()) / 15);
+        return date.getHours() * 60 + date.getMinutes();
+    }
+
+    function getColor(state) {
+        if (state.state_id === 'WorkingTimeState') {
+            return '#a4f9c8';
+        } else {
+            return '#8c847d';
+        }
     }
 </script>
+
+<!--<script>-->
+<!--    // assumes post DomContentLoaded-->
+<!--    document.addEventListener("DOMContentLoaded", () => {-->
+<!--        const d = new Date();-->
+<!--        document.querySelector(".dayview-now-marker").style.top =-->
+<!--            (document-->
+<!--                    .querySelector(".dayview-gridcell-container")-->
+<!--                    .getBoundingClientRect().height /-->
+<!--                24) *-->
+<!--            (d.getHours() + d.getMinutes() / 60) +-->
+<!--            "px";-->
+<!--    });-->
+<!--</script>-->
 
 <div>
     <div class="dayview-container">
@@ -40,10 +63,14 @@
                         {#each Object.entries(states) as [, state]}
                             <div
                                     class="dayview-cell dayview-cell-extended"
-                                    style="grid-row: {calculateGridRowFromDate(new Date(state.started_time))} / {calculateGridRowFromDate(new Date(state.finished_time))};"
+                                    style="background-color: {getColor(state)}; grid-row: {calculateGridRowFromDate(new Date(state.started_time))} / {calculateGridRowFromDate(new Date(state.finished_time))};"
                             >
-                                <div class="dayview-cell-title">{state.state_id}</div>
-                                <div class="dayview-cell-time">{getTime(new Date(state.started_time))} - {getTime(new Date(state.finished_time))}</div>
+                                {#if state.length_in_seconds > 600}
+                                    <div class="dayview-cell-title">{state.state_id}</div>
+                                {/if}
+                                {#if state.length_in_seconds > 1200}
+                                    <div class="dayview-cell-time">{getTime(new Date(state.started_time))} - {getTime(new Date(state.finished_time))}</div>
+                                {/if}
                             </div>
                         {/each}
                     </div>
@@ -73,7 +100,7 @@
     }
 
     .dayview-timestring-container {
-        height: 40px;
+        height: 60px;
         position: relative;
         padding-inline-end: 8px;
         text-align: right;
@@ -121,7 +148,7 @@
     }
 
     .dayview-grid-tile {
-        height: 40px;
+        height: 60px;
     }
 
     .dayview-grid-tile:after {
@@ -165,15 +192,15 @@
         height: 100%;
         width: 100%;
         display: grid;
-        grid-template-rows: repeat(96, 10px);
+        grid-template-rows: repeat(1440, 1px);
         /* grid-template-columns: fit-content(100%); */
     }
 
     .dayview-cell {
         z-index: 2;
         border-radius: 5px;
-        border: 1px solid #4125ff;
-        background-color: #6670bf;
+        border: 1px solid #80ff91;
+        background-color: #80ffbf;
         padding: 0 3px;
     }
 
