@@ -4,6 +4,7 @@
 use app::__cmd__get_initial_time;
 use app::__cmd__get_today_states;
 use app::__cmd__start_cycle;
+use app::env_variables::POMODORO_DEVTOOLS_ENABLED;
 use app::history::get_today_states;
 use app::history::HistoryContext;
 use app::settings::ApplicationSettings;
@@ -33,8 +34,8 @@ fn main() {
             let history_context = HistoryContext::new(connection);
             app.manage(Mutex::new(history_context));
 
-            let enabled = env::var("POMODORO_DEVTOOLS_ENABLED").is_ok();
-            if enabled {
+            let enabled_devtools = map_boolean_env(POMODORO_DEVTOOLS_ENABLED);
+            if enabled_devtools {
                 let window = app.get_window("main").unwrap();
                 window.open_devtools();
             }
@@ -50,6 +51,15 @@ fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+fn map_boolean_env(flag_name: &str) -> bool {
+    let enabled_devtools = env::var(flag_name).unwrap_or_default();
+    if enabled_devtools == "true" {
+        true
+    } else {
+        false
+    }
 }
 
 fn load_settings() -> ApplicationSettings {
