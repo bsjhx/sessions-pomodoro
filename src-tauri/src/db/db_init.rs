@@ -2,8 +2,11 @@ use std::fs;
 use std::path::Path;
 
 use crate::db::db_migrate::migrate;
-use r2d2::Pool;
+use crate::db::insert_mock_data;
+use r2d2::{Pool, PooledConnection};
 use r2d2_sqlite::SqliteConnectionManager;
+
+pub type Connection = PooledConnection<SqliteConnectionManager>;
 
 pub fn init(db_path: &str) -> Pool<SqliteConnectionManager> {
     if !db_file_exists(db_path) {
@@ -19,8 +22,20 @@ pub fn init(db_path: &str) -> Pool<SqliteConnectionManager> {
     pool
 }
 
+pub fn init_with_mock_data(db_path: &str) -> Pool<SqliteConnectionManager> {
+    let already_exists = db_file_exists(db_path);
+    let pool = init(db_path);
+    let pool = pool.clone();
+    let connection = pool.get().unwrap();
+
+    if !already_exists {
+        insert_mock_data(&connection);
+    }
+
+    pool
+}
+
 fn create_db_pool(db_path: &str) -> Pool<SqliteConnectionManager> {
-    // let db_path = format!("sqlite://{}", db_path);
     println!("Opening DB on path: [{}]", db_path);
     let manager = SqliteConnectionManager::file(db_path);
     Pool::builder().build(manager).unwrap()
@@ -36,6 +51,6 @@ fn create_db_file(db_path: &str) {
     fs::File::create(db_path).unwrap();
 }
 
-fn db_file_exists(db_path: &str) -> bool {
+pub fn db_file_exists(db_path: &str) -> bool {
     Path::new(&db_path).exists()
 }

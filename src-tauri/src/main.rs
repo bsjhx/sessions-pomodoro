@@ -4,6 +4,9 @@
 use app::__cmd__get_initial_time;
 use app::__cmd__get_today_states;
 use app::__cmd__start_cycle;
+use app::env_variables::{
+    read_boolean_variable, POMODORO_DEVTOOLS_ENABLED, POMODORO_ENABLE_TEST_DATA,
+};
 use app::history::get_today_states;
 use app::history::HistoryContext;
 use app::settings::ApplicationSettings;
@@ -22,7 +25,13 @@ fn main() {
         .setup(|app| {
             let settings = load_settings();
 
-            let pool = db::init(settings.db_file_path.as_ref());
+            let enabled_test_data = read_boolean_variable(POMODORO_ENABLE_TEST_DATA);
+            let pool = if !enabled_test_data {
+                db::init(settings.db_file_path.as_ref())
+            } else {
+                db::init_with_mock_data("./sample_database.sqlite")
+            };
+
             let pool = pool.clone();
             let connection = pool.get().unwrap();
 
@@ -33,8 +42,8 @@ fn main() {
             let history_context = HistoryContext::new(connection);
             app.manage(Mutex::new(history_context));
 
-            let enabled = env::var("POMODORO_DEVTOOLS_ENABLED").is_ok();
-            if enabled {
+            let enabled_devtools = read_boolean_variable(POMODORO_DEVTOOLS_ENABLED);
+            if enabled_devtools {
                 let window = app.get_window("main").unwrap();
                 window.open_devtools();
             }

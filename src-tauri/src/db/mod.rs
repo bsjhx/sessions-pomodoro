@@ -1,9 +1,13 @@
 mod db_init;
 mod db_migrate;
 mod history_db;
+mod sample_data;
 mod working_cycle_db;
 
 pub use db_init::init;
+pub use db_init::init_with_mock_data;
+
+pub use sample_data::insert_mock_data;
 
 pub use db_migrate::migrate;
 
