@@ -84,9 +84,8 @@ impl HistoryContext {
         }
     }
 
-    pub fn get_states_history_for_today(&self) -> StatesDurationsDetails {
-        let today = chrono::offset::Utc::now();
-        let states = self.history_database.get_states_history_by_date(today);
+    pub fn get_states_history_for_day(&self, day: DateTime<Utc>) -> StatesDurationsDetails {
+        let states = self.history_database.get_states_history_by_date(day);
         calculate(&states)
     }
 }

@@ -30,7 +30,7 @@ fn history_context_should_return_today_states() {
         .unwrap();
 
     // When
-    let actual = history_context.get_states_history_for_today();
+    let actual = history_context.get_states_history_for_day(today);
 
     // Then
     let states = get_all_states_from_db(&connection);
