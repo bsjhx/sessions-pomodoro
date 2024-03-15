@@ -6,7 +6,7 @@
     let interval = 0;
     let timeDisplay = "";
     let currentState = {state_name: '', state_duration: 0};
-    let timeout = 20;
+    let timeout = 1000;
     let counterOverFlowed = false;
     let initialDuration = 0;
 
@@ -99,9 +99,6 @@
         return n < 10 ? "".concat('0', n.toString()) : n.toString();
     }
 
-    function getTime(date) {
-        return `${date.getHours()}:${date.getMinutes()}`
-    }
 </script>
 
 <div class="container">
