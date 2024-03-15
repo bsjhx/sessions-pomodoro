@@ -22,7 +22,7 @@
 
     onMount(async () => {
         initialDuration =  await invoke('get_initial_time');
-        todayHistoryResponse = await invoke('get_today_states');
+        todayHistoryResponse = await invoke('get_states_for_day', { day: new Date() });
         console.log(todayHistoryResponse);
 
         currentState = {
@@ -36,7 +36,7 @@
 
     async function startCycle() {
         currentState = await invoke('start_cycle');
-        todayHistoryResponse = await invoke('get_today_states');
+        todayHistoryResponse = await invoke('get_states_for_day', { day: new Date() });
         if (interval === 0) {
             interval = setInterval(onIntervalHandler, timeout);
         }
@@ -61,7 +61,7 @@
 
     async function finishCycle() {
         currentState = await invoke('finish_cycle');
-        todayHistoryResponse = await invoke('get_today_states');
+        todayHistoryResponse = await invoke('get_states_for_day', { day: new Date() });
 
         counter = initialDuration;
         timeDisplay = updateClock(counter);
@@ -76,7 +76,7 @@
 
     async function endCurrentSession() {
         currentState = await invoke('end_current_session');
-        todayHistoryResponse = await invoke('get_today_states');
+        todayHistoryResponse = await invoke('get_states_for_day', { day: new Date() });
         counter = currentState.state_duration;
         timeDisplay = updateClock(counter);
         clearInterval(interval);
