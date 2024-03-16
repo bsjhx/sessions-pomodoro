@@ -2,6 +2,7 @@
     import {invoke} from '@tauri-apps/api/tauri'
     import {onMount} from "svelte";
     import Calendar from "$lib/Calendar.svelte";
+    import * as animateScroll from "svelte-scrollto";
 
     let interval = 0;
     let timeDisplay = "";
@@ -16,13 +17,15 @@
     let progress = 0;
     let additionalProgress = 0;
 
+    let currentDate = new Date();
+
     let todayHistoryResponse = {
         states: []
     };
 
     onMount(async () => {
         initialDuration =  await invoke('get_initial_time');
-        todayHistoryResponse = await invoke('get_states_for_day', { day: new Date() });
+        todayHistoryResponse = await getTodayHistoryResponse();
         console.log(todayHistoryResponse);
 
         currentState = {
@@ -34,9 +37,13 @@
         timeDisplay = updateClock(counter);
     });
 
+    async function getTodayHistoryResponse() {
+        return await invoke('get_states_for_day', {day: currentDate});
+    }
+
     async function startCycle() {
         currentState = await invoke('start_cycle');
-        todayHistoryResponse = await invoke('get_states_for_day', { day: new Date() });
+        todayHistoryResponse = await getTodayHistoryResponse();
         if (interval === 0) {
             interval = setInterval(onIntervalHandler, timeout);
         }
@@ -61,7 +68,7 @@
 
     async function finishCycle() {
         currentState = await invoke('finish_cycle');
-        todayHistoryResponse = await invoke('get_states_for_day', { day: new Date() });
+        todayHistoryResponse = await getTodayHistoryResponse();
 
         counter = initialDuration;
         timeDisplay = updateClock(counter);
@@ -76,7 +83,7 @@
 
     async function endCurrentSession() {
         currentState = await invoke('end_current_session');
-        todayHistoryResponse = await invoke('get_states_for_day', { day: new Date() });
+        todayHistoryResponse = await getTodayHistoryResponse();
         counter = currentState.state_duration;
         timeDisplay = updateClock(counter);
         clearInterval(interval);
@@ -97,6 +104,18 @@
 
     function renderTimeNumber(n) {
         return n < 10 ? "".concat('0', n.toString()) : n.toString();
+    }
+
+    async function previousDay() {
+        currentDate = new Date(currentDate.setDate(currentDate.getDate() - 1));
+        todayHistoryResponse = await getTodayHistoryResponse();
+        animateScroll.scrollTo({element: 'testId3', offset: 500});
+    }
+
+    async function nextDay() {
+        currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
+        todayHistoryResponse = await getTodayHistoryResponse();
+        animateScroll.scrollTo({element: 'testId3', offset: 500});
     }
 
 </script>
@@ -151,10 +170,13 @@
                 </div>
             </div>
         </div>
-        <div class="text-center card m-1 col">
-            <div class="overflow-auto">
-                <div class="card-body mt-2 anyClass">
-                    <p>Today's statistics:</p>
+        <div id="testId" class="text-center card m-1 col">
+            <div>
+                <div id="testId2" class="card-body mt-2 anyClass">
+                    <p id="testId3">Today's statistics:</p>
+                    <button on:click='{previousDay}'>{"<"}</button>
+                    {currentDate.getDate()} - {currentDate.getMonth() + 1}
+                    <button on:click='{nextDay}'>{">"}</button>
                     <Calendar states={todayHistoryResponse.states}></Calendar>
                 </div>
             </div>
