@@ -2,7 +2,6 @@
     import {invoke} from '@tauri-apps/api/tauri'
     import {onMount} from "svelte";
     import Calendar from "$lib/Calendar.svelte";
-    import * as animateScroll from "svelte-scrollto";
 
     let interval = 0;
     let timeDisplay = "";
@@ -24,7 +23,7 @@
     };
 
     onMount(async () => {
-        initialDuration =  await invoke('get_initial_time');
+        initialDuration = await invoke('get_initial_time');
         todayHistoryResponse = await getTodayHistoryResponse();
         console.log(todayHistoryResponse);
 
@@ -109,21 +108,19 @@
     async function previousDay() {
         currentDate = new Date(currentDate.setDate(currentDate.getDate() - 1));
         todayHistoryResponse = await getTodayHistoryResponse();
-        animateScroll.scrollTo({element: 'testId3', offset: 500});
     }
 
     async function nextDay() {
         currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
         todayHistoryResponse = await getTodayHistoryResponse();
-        animateScroll.scrollTo({element: 'testId3', offset: 500});
     }
 
 </script>
 
-<div class="container">
+<div class="container" style="margin-top: 30px">
     <div class="row">
         <div class="container text-center card col m-1">
-            <div class="card-body mt-2">
+            <div class="card-body">
                 <div class="row m-3">
                     <div class="col">{currentState.state_name}</div>
                 </div>
@@ -172,21 +169,16 @@
         </div>
         <div id="testId" class="text-center card m-1 col">
             <div>
-                <div id="testId2" class="card-body mt-2 anyClass">
-                    <p id="testId3">Today's statistics:</p>
-                    <button on:click='{previousDay}'>{"<"}</button>
-                    {currentDate.getDate()} - {currentDate.getMonth() + 1}
-                    <button on:click='{nextDay}'>{">"}</button>
+                <div class="card-body mt-2">
+                    <div style="margin-bottom: 20px">
+                        <p>Today's statistics:</p>
+                        <button on:click='{previousDay}'>{'<'}</button>
+                        {currentDate.getDate()} - {currentDate.getMonth() + 1}
+                        <button on:click='{nextDay}'>{">"}</button>
+                    </div>
                     <Calendar states={todayHistoryResponse.states}></Calendar>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .anyClass {
-        height:80vh;
-        overflow-y: scroll;
-    }
-</style>
