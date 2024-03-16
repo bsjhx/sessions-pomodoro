@@ -115,6 +115,22 @@
         todayHistoryResponse = await getTodayHistoryResponse();
     }
 
+    function displayDate(date) {
+        let res = '';
+        if (date.getDate() < 10) {
+            res += '0' + date.getDate();
+        } else {
+            res += date.getDate();
+        }
+        res += ' - ';
+        if (date.getMonth() < 9) {
+            res += '0' + (date.getMonth() + 1);
+        } else {
+            res += (date.getMonth() + 1);
+        }
+        return res;
+    }
+
 </script>
 
 <div class="container" style="margin-top: 30px">
@@ -171,10 +187,9 @@
             <div>
                 <div class="card-body mt-2">
                     <div style="margin-bottom: 20px">
-                        <p>Today's statistics:</p>
-                        <button on:click='{previousDay}'>{'<'}</button>
-                        {currentDate.getDate()} - {currentDate.getMonth() + 1}
-                        <button on:click='{nextDay}'>{">"}</button>
+                        <button type="button" class="btn btn-info" on:click='{previousDay}'>{'<'}</button>
+                        {displayDate(currentDate)}
+                        <button type="button" class="btn btn-info" on:click='{nextDay}'>{">"}</button>
                     </div>
                     <Calendar states={todayHistoryResponse.states}></Calendar>
                 </div>
