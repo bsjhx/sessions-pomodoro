@@ -6,7 +6,7 @@
     let interval = 0;
     let timeDisplay = "";
     let currentState = {state_name: '', state_duration: 0};
-    let timeout = 20;
+    let timeout = 1000;
     let counterOverFlowed = false;
     let initialDuration = 0;
 
@@ -16,13 +16,15 @@
     let progress = 0;
     let additionalProgress = 0;
 
+    let currentDate = new Date();
+
     let todayHistoryResponse = {
         states: []
     };
 
     onMount(async () => {
-        initialDuration =  await invoke('get_initial_time');
-        todayHistoryResponse = await invoke('get_today_states');
+        initialDuration = await invoke('get_initial_time');
+        todayHistoryResponse = await getTodayHistoryResponse();
         console.log(todayHistoryResponse);
 
         currentState = {
@@ -34,9 +36,13 @@
         timeDisplay = updateClock(counter);
     });
 
+    async function getTodayHistoryResponse() {
+        return await invoke('get_states_for_day', {day: currentDate});
+    }
+
     async function startCycle() {
         currentState = await invoke('start_cycle');
-        todayHistoryResponse = await invoke('get_today_states');
+        todayHistoryResponse = await getTodayHistoryResponse();
         if (interval === 0) {
             interval = setInterval(onIntervalHandler, timeout);
         }
@@ -61,7 +67,7 @@
 
     async function finishCycle() {
         currentState = await invoke('finish_cycle');
-        todayHistoryResponse = await invoke('get_today_states');
+        todayHistoryResponse = await getTodayHistoryResponse();
 
         counter = initialDuration;
         timeDisplay = updateClock(counter);
@@ -76,7 +82,7 @@
 
     async function endCurrentSession() {
         currentState = await invoke('end_current_session');
-        todayHistoryResponse = await invoke('get_today_states');
+        todayHistoryResponse = await getTodayHistoryResponse();
         counter = currentState.state_duration;
         timeDisplay = updateClock(counter);
         clearInterval(interval);
@@ -99,15 +105,38 @@
         return n < 10 ? "".concat('0', n.toString()) : n.toString();
     }
 
-    function getTime(date) {
-        return `${date.getHours()}:${date.getMinutes()}`
+    async function previousDay() {
+        currentDate = new Date(currentDate.setDate(currentDate.getDate() - 1));
+        todayHistoryResponse = await getTodayHistoryResponse();
     }
+
+    async function nextDay() {
+        currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
+        todayHistoryResponse = await getTodayHistoryResponse();
+    }
+
+    function displayDate(date) {
+        let res = '';
+        if (date.getDate() < 10) {
+            res += '0' + date.getDate();
+        } else {
+            res += date.getDate();
+        }
+        res += ' - ';
+        if (date.getMonth() < 9) {
+            res += '0' + (date.getMonth() + 1);
+        } else {
+            res += (date.getMonth() + 1);
+        }
+        return res;
+    }
+
 </script>
 
-<div class="container">
+<div class="container" style="margin-top: 30px">
     <div class="row">
         <div class="container text-center card col m-1">
-            <div class="card-body mt-2">
+            <div class="card-body">
                 <div class="row m-3">
                     <div class="col">{currentState.state_name}</div>
                 </div>
@@ -154,20 +183,17 @@
                 </div>
             </div>
         </div>
-        <div class="text-center card m-1 col">
-            <div class="overflow-auto">
-                <div class="card-body mt-2 anyClass">
-                    <p>Today's statistics:</p>
+        <div id="testId" class="text-center card m-1 col">
+            <div>
+                <div class="card-body mt-2">
+                    <div style="margin-bottom: 20px">
+                        <button type="button" class="btn btn-info" on:click='{previousDay}'>{'<'}</button>
+                        {displayDate(currentDate)}
+                        <button type="button" class="btn btn-info" on:click='{nextDay}'>{">"}</button>
+                    </div>
                     <Calendar states={todayHistoryResponse.states}></Calendar>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    .anyClass {
-        height:80vh;
-        overflow-y: scroll;
-    }
-</style>

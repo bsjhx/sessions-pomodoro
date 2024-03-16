@@ -2,12 +2,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use app::__cmd__get_initial_time;
-use app::__cmd__get_today_states;
+use app::__cmd__get_states_for_day;
 use app::__cmd__start_cycle;
 use app::env_variables::{
     read_boolean_variable, POMODORO_DEVTOOLS_ENABLED, POMODORO_ENABLE_TEST_DATA,
 };
-use app::history::get_today_states;
+use app::history::get_states_for_day;
 use app::history::HistoryContext;
 use app::settings::ApplicationSettings;
 use app::work_cycle::work_cycle_context::WorkCycleContext;
@@ -55,7 +55,7 @@ fn main() {
             finish_cycle,
             end_current_session,
             get_initial_time,
-            get_today_states
+            get_states_for_day
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

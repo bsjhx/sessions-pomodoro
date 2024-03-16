@@ -1,5 +1,6 @@
 <script>
     import {onMount} from "svelte";
+    import { afterUpdate } from 'svelte';
 
     const HOURS = ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
 
@@ -10,7 +11,24 @@
     onMount(() => {
         let now = new Date();
         nowMarkerPosition = `${now.getHours() * 60 + now.getMinutes()}px`
-        setInterval(onIntervalHandler, 10)
+        setInterval(onIntervalHandler, 10);
+        const el = document.getElementById('state-1');
+        console.log('elesss', el);
+    });
+
+    afterUpdate(() => {
+        console.log('DOM changed');
+        let el;
+        if (states.length > 0 && new Date(states[0].started_time).getDate() === new Date().getDate() || states.length === 0) {
+            el = document.getElementById('now-marker');
+        } else {
+            el = document.getElementById('state-0');
+        }
+
+        if (!el) return;
+        el.scrollIntoView({
+            behavior: 'smooth'
+        });
     });
 
     function onIntervalHandler() {
@@ -37,7 +55,7 @@
 
 </script>
 
-<div>
+<div class="scrollable">
     <div class="dayview-container">
         <div class="dayview-timestrings-container">
             <div class="dayview-timestrings">
@@ -57,20 +75,19 @@
                         <div class="dayview-grid-tile"></div>
                     {/each}
                 </div>
-                <div class="dayview-now-marker" style:top="{nowMarkerPosition}"></div>
+                <div class="dayview-now-marker" id="now-marker" style:top="{nowMarkerPosition}"></div>
                 <div class="dayview-grid-marker-start"></div>
                 <div class="dayview-gridcell-container">
-
                     <div class="dayview-gridcell">
-                        {#each Object.entries(states) as [, state]}
-                            <div
+                        {#each Object.entries(states) as [i, state]}
+                            <div    id={`state-${i}`}
                                     class="dayview-cell dayview-cell-extended"
                                     style="background-color: {getColor(state)}; grid-row: {calculateGridRowFromDate(new Date(state.started_time))} / {calculateGridRowFromDate(new Date(state.finished_time))};"
                             >
-                                {#if state.length_in_seconds > 600}
+                                {#if state.length_in_seconds > 500}
                                     <div class="dayview-cell-title">{state.state_id}</div>
                                 {/if}
-                                {#if state.length_in_seconds > 1200}
+                                {#if state.length_in_seconds > 800}
                                     <div class="dayview-cell-time">{getTime(new Date(state.started_time))} - {getTime(new Date(state.finished_time))}</div>
                                 {/if}
                             </div>
@@ -129,8 +146,6 @@
 
     .dayview-grid-container {
         flex: 1 1 0;
-        overflow-x: auto;
-        overflow-y: scroll;
         display: flex;
         align-items: flex-start;
     }
@@ -253,5 +268,10 @@
         white-space: normal;
         overflow-wrap: break-word;
         word-wrap: break-word;
+    }
+
+    .scrollable {
+        height:70vh;
+        overflow-y: scroll;
     }
 </style>
