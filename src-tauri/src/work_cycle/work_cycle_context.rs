@@ -1,6 +1,9 @@
-use crate::db::WorkingCycleDbSqliteImpl;
+use crate::db::{WorkingCycleDb, WorkingCycleDbSqliteImpl};
 use crate::settings::WorkCycleSettings;
-use crate::work_cycle::{NothingState, State, WorkCycleManager};
+use crate::work_cycle::{
+    LongBreakTimeState, NothingState, ShortBreakTimeState, State, StateId, WorkCycleManager,
+    WorkingTimeState,
+};
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 
@@ -15,12 +18,26 @@ impl WorkCycleContext {
         settings: WorkCycleSettings,
         connection: PooledConnection<SqliteConnectionManager>,
     ) -> Self {
+        let work_cycle_database = Box::new(WorkingCycleDbSqliteImpl::new(connection));
+
+        let state: Option<Box<dyn State + Send + Sync>> =
+            match work_cycle_database.fetch_last_state() {
+                None => Some(Box::new(NothingState)),
+                Some((id, _)) => match id.as_str() {
+                    WorkingTimeState::ID => Some(Box::new(WorkingTimeState)),
+                    ShortBreakTimeState::ID => Some(Box::new(WorkingTimeState)),
+                    LongBreakTimeState::ID => Some(Box::new(WorkingTimeState)),
+                    NothingState::ID => Some(Box::new(WorkingTimeState)),
+                    _ => panic!("Wrong state in database."),
+                },
+            };
+
         WorkCycleContext {
-            state: Some(Box::new(NothingState)),
+            state,
             settings,
             work_cycle_manager: WorkCycleManager::new(
                 settings.work_sessions_to_long_break,
-                Box::new(WorkingCycleDbSqliteImpl::new(connection)),
+                work_cycle_database,
             ),
         }
     }

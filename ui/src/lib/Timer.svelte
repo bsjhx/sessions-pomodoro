@@ -122,7 +122,7 @@
         } else {
             res += date.getDate();
         }
-        res += ' - ';
+        res += '.';
         if (date.getMonth() < 9) {
             res += '0' + (date.getMonth() + 1);
         } else {
