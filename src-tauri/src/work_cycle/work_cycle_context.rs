@@ -1,9 +1,10 @@
 use crate::db::{WorkingCycleDb, WorkingCycleDbSqliteImpl};
 use crate::settings::WorkCycleSettings;
 use crate::work_cycle::{
-    LongBreakTimeState, NothingState, ShortBreakTimeState, State, StateId, WorkCycleManager,
-    WorkingTimeState,
+    LongBreakTimeState, NothingState, ShortBreakTimeState, State, StateId, StateResponse,
+    WorkCycleManager, WorkingTimeState,
 };
+use chrono::{DateTime, Utc};
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 
@@ -11,6 +12,7 @@ pub struct WorkCycleContext {
     pub state: Option<Box<dyn State + Send + Sync>>,
     pub settings: WorkCycleSettings,
     pub work_cycle_manager: WorkCycleManager,
+    pub last_updated: Option<DateTime<Utc>>,
 }
 
 impl WorkCycleContext {
@@ -20,17 +22,22 @@ impl WorkCycleContext {
     ) -> Self {
         let work_cycle_database = Box::new(WorkingCycleDbSqliteImpl::new(connection));
 
-        let state: Option<Box<dyn State + Send + Sync>> =
-            match work_cycle_database.fetch_last_state() {
-                None => Some(Box::new(NothingState)),
-                Some((id, _)) => match id.as_str() {
-                    WorkingTimeState::ID => Some(Box::new(WorkingTimeState)),
-                    ShortBreakTimeState::ID => Some(Box::new(ShortBreakTimeState)),
-                    LongBreakTimeState::ID => Some(Box::new(LongBreakTimeState)),
-                    NothingState::ID => Some(Box::new(NothingState)),
-                    _ => panic!("Wrong state in database. loaded from db=[{}]", id),
-                },
-            };
+        let state_from_db = work_cycle_database.fetch_last_state();
+        let state: Option<Box<dyn State + Send + Sync>> = match &state_from_db {
+            None => Some(Box::new(NothingState)),
+            Some((id, _)) => match id.as_str() {
+                WorkingTimeState::ID => Some(Box::new(WorkingTimeState)),
+                ShortBreakTimeState::ID => Some(Box::new(ShortBreakTimeState)),
+                LongBreakTimeState::ID => Some(Box::new(LongBreakTimeState)),
+                NothingState::ID => Some(Box::new(NothingState)),
+                _ => panic!("Wrong state in database. loaded from db=[{}]", id),
+            },
+        };
+
+        let last_updated: Option<DateTime<Utc>> = match &state_from_db {
+            None => None,
+            Some((_, last_updated)) => Some(last_updated.clone()),
+        };
 
         WorkCycleContext {
             state,
@@ -39,6 +46,19 @@ impl WorkCycleContext {
                 settings.work_sessions_to_long_break,
                 work_cycle_database,
             ),
+            last_updated,
+        }
+    }
+
+    pub fn get_current_state(&self) -> StateResponse {
+        let now: DateTime<Utc> = Utc::now();
+        let diff = now - self.last_updated.unwrap_or(now);
+        let mut time_left = self.get_current_state_duration() - diff.num_seconds() as i32;
+        time_left = if time_left < 0 { 0 } else { time_left };
+        StateResponse {
+            state_name: self.get_current_state_name(),
+            is_runnable: self.get_current_state_name() != NothingState::ID, // todo this should be loaded from settings as flag defined there
+            time_left,
         }
     }
 

@@ -9,14 +9,18 @@ pub struct CurrentStateResponse {
     state_duration: i32,
 }
 
+#[derive(Serialize)]
+pub struct StateResponse {
+    pub(crate) state_name: String,
+    pub(crate) time_left: i32,
+    pub(crate) is_runnable: bool,
+}
+
 #[tauri::command]
 #[cfg(not(tarpaulin_include))]
-pub fn get_current_state(state: State<Mutex<WorkCycleContext>>) -> CurrentStateResponse {
+pub fn get_current_state(state: State<Mutex<WorkCycleContext>>) -> StateResponse {
     let mut app = state.lock().unwrap();
-    CurrentStateResponse {
-        state_name: app.get_current_state_name(),
-        state_duration: app.get_current_state_duration(),
-    }
+    app.get_current_state()
 }
 
 #[tauri::command]

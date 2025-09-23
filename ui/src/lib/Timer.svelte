@@ -26,17 +26,20 @@
         initialDuration = await invoke('get_initial_time');
         todayHistoryResponse = await getTodayHistoryResponse();
 
-        currentState = await invoke('get_current_state');
-        console.log('cs ', currentState);
+        const c = await invoke('get_current_state');
+        console.log('cs ', c);
         console.log('id ', initialDuration);
 
-        if (currentState.state_name !== 'NothingState') {
+        currentState = {
+            state_name: c.state_name,
+            state_duration: c.time_left
+        };
+
+        if (c.is_runnable) {
             interval = setInterval(onIntervalHandler, timeout);
-        } else {
-            currentState.state_duration = initialDuration;
         }
 
-        counter = currentState.state_duration;
+        counter = currentState.state_duration === 0 ? 1500 : currentState.state_duration;
         timeDisplay = updateClock(counter);
     });
 
