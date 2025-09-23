@@ -25,12 +25,16 @@
     onMount(async () => {
         initialDuration = await invoke('get_initial_time');
         todayHistoryResponse = await getTodayHistoryResponse();
-        console.log(todayHistoryResponse);
 
-        currentState = {
-            state_name: 'NothingState',
-            state_duration: initialDuration
-        };
+        currentState = await invoke('get_current_state');
+        console.log('cs ', currentState);
+        console.log('id ', initialDuration);
+
+        if (currentState.state_name !== 'NothingState') {
+            interval = setInterval(onIntervalHandler, timeout);
+        } else {
+            currentState.state_duration = initialDuration;
+        }
 
         counter = currentState.state_duration;
         timeDisplay = updateClock(counter);

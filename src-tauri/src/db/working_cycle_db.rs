@@ -45,8 +45,9 @@ impl WorkingCycleDb for WorkingCycleDbSqliteImpl {
         let a = stmt
             .query_map([], |row| {
                 Ok((
-                    row.get(0).unwrap_or_default(),
-                    row.get(1).unwrap_or_default(),
+                    row.get::<_, String>("state_id").unwrap_or_default(),
+                    row.get::<_, DateTime<Utc>>("started_time")
+                        .unwrap_or_default(),
                 ))
             })
             .unwrap();

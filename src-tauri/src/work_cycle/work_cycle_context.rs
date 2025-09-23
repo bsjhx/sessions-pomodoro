@@ -25,10 +25,10 @@ impl WorkCycleContext {
                 None => Some(Box::new(NothingState)),
                 Some((id, _)) => match id.as_str() {
                     WorkingTimeState::ID => Some(Box::new(WorkingTimeState)),
-                    ShortBreakTimeState::ID => Some(Box::new(WorkingTimeState)),
-                    LongBreakTimeState::ID => Some(Box::new(WorkingTimeState)),
-                    NothingState::ID => Some(Box::new(WorkingTimeState)),
-                    _ => panic!("Wrong state in database."),
+                    ShortBreakTimeState::ID => Some(Box::new(ShortBreakTimeState)),
+                    LongBreakTimeState::ID => Some(Box::new(LongBreakTimeState)),
+                    NothingState::ID => Some(Box::new(NothingState)),
+                    _ => panic!("Wrong state in database. loaded from db=[{}]", id),
                 },
             };
 

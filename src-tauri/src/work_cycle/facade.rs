@@ -11,6 +11,16 @@ pub struct CurrentStateResponse {
 
 #[tauri::command]
 #[cfg(not(tarpaulin_include))]
+pub fn get_current_state(state: State<Mutex<WorkCycleContext>>) -> CurrentStateResponse {
+    let mut app = state.lock().unwrap();
+    CurrentStateResponse {
+        state_name: app.get_current_state_name(),
+        state_duration: app.get_current_state_duration(),
+    }
+}
+
+#[tauri::command]
+#[cfg(not(tarpaulin_include))]
 pub fn start_cycle(state: State<Mutex<WorkCycleContext>>) -> CurrentStateResponse {
     let mut app = state.lock().unwrap();
     app.start_cycle();
