@@ -102,4 +102,4 @@ jobs:
           libayatana-appindicator3-dev \
           librsvg2-dev
       - name: Linting
-        run: cargo clippy -- -D warnings
+        run: cargo clippy --all-targets --all-features --workspace --no-deps -- -D warnings
