@@ -34,10 +34,9 @@ impl WorkCycleContext {
             },
         };
 
-        let last_updated: Option<DateTime<Utc>> = match &state_from_db {
-            None => None,
-            Some((_, last_updated)) => Some(last_updated.clone()),
-        };
+        let last_updated: Option<DateTime<Utc>> = state_from_db
+            .as_ref()
+            .map(|(_, last_updated)| *last_updated);
 
         WorkCycleContext {
             state,

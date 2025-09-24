@@ -57,7 +57,7 @@ impl WorkingCycleDb for WorkingCycleDbSqliteImpl {
         if results.is_empty() {
             None
         } else {
-            Some(results.get(0).unwrap().to_owned())
+            Some(results.first().unwrap().to_owned())
         }
     }
 }
