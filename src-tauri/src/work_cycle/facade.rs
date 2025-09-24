@@ -9,6 +9,22 @@ pub struct CurrentStateResponse {
     state_duration: i32,
 }
 
+#[derive(Serialize)]
+pub struct StateResponse {
+    pub(crate) state_name: String,
+    pub(crate) is_runnable: bool,
+    pub(crate) state_duration: i32,
+    pub(crate) overtime: i32,
+    pub(crate) time_left: i32,
+}
+
+#[tauri::command]
+#[cfg(not(tarpaulin_include))]
+pub fn get_current_state(state: State<Mutex<WorkCycleContext>>) -> StateResponse {
+    let app = state.lock().unwrap();
+    app.get_current_state()
+}
+
 #[tauri::command]
 #[cfg(not(tarpaulin_include))]
 pub fn start_cycle(state: State<Mutex<WorkCycleContext>>) -> CurrentStateResponse {

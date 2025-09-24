@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use app::__cmd__get_current_state;
 use app::__cmd__get_initial_time;
 use app::__cmd__get_states_for_day;
 use app::__cmd__start_cycle;
@@ -11,7 +12,9 @@ use app::history::get_states_for_day;
 use app::history::HistoryContext;
 use app::settings::ApplicationSettings;
 use app::work_cycle::work_cycle_context::WorkCycleContext;
-use app::work_cycle::{end_current_session, finish_cycle, get_initial_time, start_cycle};
+use app::work_cycle::{
+    end_current_session, finish_cycle, get_current_state, get_initial_time, start_cycle,
+};
 use app::{__cmd__end_current_session, db};
 use app::{__cmd__finish_cycle, settings};
 use core::default::Default;
@@ -55,7 +58,8 @@ fn main() {
             finish_cycle,
             end_current_session,
             get_initial_time,
-            get_states_for_day
+            get_states_for_day,
+            get_current_state
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

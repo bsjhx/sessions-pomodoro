@@ -25,15 +25,30 @@
     onMount(async () => {
         initialDuration = await invoke('get_initial_time');
         todayHistoryResponse = await getTodayHistoryResponse();
-        console.log(todayHistoryResponse);
+
+        const c = await invoke('get_current_state');
+        console.log('cs ', c);
+        console.log('id ', initialDuration);
 
         currentState = {
-            state_name: 'NothingState',
-            state_duration: initialDuration
+            state_name: c.state_name,
+            state_duration: c.state_duration
         };
 
-        counter = currentState.state_duration;
-        timeDisplay = updateClock(counter);
+        if (c.is_runnable) {
+            interval = setInterval(onIntervalHandler, timeout);
+            counter = c.time_left;
+        } else {
+            counter = initialDuration;
+        }
+
+        if (c.overtime > 0) {
+            counterOverFlowed = true;
+            additionalCounter = c.overtime;
+            additionalProgress = (additionalCounter / (counter + additionalCounter)) * 100;
+        }
+
+        timeDisplay = updateClock(counter + additionalCounter);
     });
 
     async function getTodayHistoryResponse() {
@@ -97,8 +112,9 @@
 
     function updateClock(i) {
         let seconds = i % 60;
-        let minutes = Math.floor(i / 60) % 3600;
-        return "".concat(renderTimeNumber(minutes), ':', renderTimeNumber(seconds));
+        let minutes = Math.floor(i / 60) % 60;
+        let hours = Math.floor(i / 3600) % 3600;
+        return "".concat(renderTimeNumber(hours), ':', renderTimeNumber(minutes), ':', renderTimeNumber(seconds));
     }
 
     function renderTimeNumber(n) {
@@ -122,7 +138,7 @@
         } else {
             res += date.getDate();
         }
-        res += ' - ';
+        res += '.';
         if (date.getMonth() < 9) {
             res += '0' + (date.getMonth() + 1);
         } else {

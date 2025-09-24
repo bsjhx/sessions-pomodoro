@@ -13,6 +13,9 @@ pub fn init_test_environment() -> (
     let settings = create_test_settings();
     let pool = init_test_database();
     let pool = pool.clone();
+    let mut conn = pool.get().unwrap();
+    migrate(&mut conn);
+
     let conn = pool.get().unwrap();
     let work_cycle_context = WorkCycleContext::new(settings, conn);
 
@@ -20,9 +23,6 @@ pub fn init_test_environment() -> (
     let history_context = HistoryContext::new(conn);
 
     let pool = pool.clone();
-    let mut conn = pool.get().unwrap();
-
-    migrate(&mut conn);
 
     (work_cycle_context, history_context, pool)
 }
@@ -50,6 +50,7 @@ fn init_test_database() -> Pool<SqliteConnectionManager> {
     let pool = Pool::builder().build(manager).unwrap();
     pool
 }
+
 fn create_test_settings() -> WorkCycleSettings {
     let mut settings = WorkCycleSettings::new();
     settings.work_sessions_to_long_break = 3;

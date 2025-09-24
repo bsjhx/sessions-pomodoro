@@ -12,6 +12,8 @@ pub struct States {
 #[automock]
 pub trait WorkingCycleDb {
     fn insert_state(&mut self, state_id: String, time: DateTime<Utc>);
+
+    fn fetch_last_state(&self) -> Option<(String, DateTime<Utc>)>;
 }
 
 pub struct WorkingCycleDbSqliteImpl {
@@ -32,6 +34,31 @@ impl WorkingCycleDb for WorkingCycleDbSqliteImpl {
                 (state_id, time),
             )
             .unwrap();
+    }
+
+    fn fetch_last_state(&self) -> Option<(String, DateTime<Utc>)> {
+        let mut stmt = self
+            .connection
+            .prepare("select * from states order by started_time desc limit 1;")
+            .unwrap();
+
+        let a = stmt
+            .query_map([], |row| {
+                Ok((
+                    row.get::<_, String>("state_id").unwrap_or_default(),
+                    row.get::<_, DateTime<Utc>>("started_time")
+                        .unwrap_or_default(),
+                ))
+            })
+            .unwrap();
+
+        let results: Vec<(String, DateTime<Utc>)> = a.into_iter().map(|s| s.unwrap()).collect();
+
+        if results.is_empty() {
+            None
+        } else {
+            Some(results.first().unwrap().to_owned())
+        }
     }
 }
 
