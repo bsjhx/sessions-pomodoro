@@ -41,6 +41,10 @@ impl State for LongBreakTimeState {
     fn get_duration(&self, time_settings: &TimeSettings) -> i32 {
         time_settings.long_break_time
     }
+
+    fn is_runnable(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]

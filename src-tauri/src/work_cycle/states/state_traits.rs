@@ -13,6 +13,10 @@ pub trait State {
     fn get_duration(&self, _time_settings: &TimeSettings) -> i32 {
         0
     }
+
+    fn is_runnable(&self) -> bool {
+        false
+    }
 }
 
 pub trait StateId {

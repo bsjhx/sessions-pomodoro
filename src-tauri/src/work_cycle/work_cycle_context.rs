@@ -52,12 +52,26 @@ impl WorkCycleContext {
 
     pub fn get_current_state(&self) -> StateResponse {
         let now: DateTime<Utc> = Utc::now();
-        let diff = now - self.last_updated.unwrap_or(now);
-        let mut time_left = self.get_current_state_duration() - diff.num_seconds() as i32;
-        time_left = if time_left < 0 { 0 } else { time_left };
+        let time_since_state_started =
+            (now - self.last_updated.unwrap_or(now)).num_seconds() as i32;
+        let state_duration = self.get_current_state_duration();
+        let mut time_left = state_duration - time_since_state_started;
+        let mut overtime = if time_left < 0 { time_left.abs() } else { 0 };
+
+        if time_left < 0 {
+            time_left = state_duration;
+        }
+
+        if self.get_current_state_name() == NothingState::ID {
+            time_left = state_duration;
+            overtime = 0;
+        }
+
         StateResponse {
             state_name: self.get_current_state_name(),
-            is_runnable: self.get_current_state_name() != NothingState::ID, // todo this should be loaded from settings as flag defined there
+            is_runnable: self.state.as_ref().unwrap().is_runnable(),
+            state_duration,
+            overtime,
             time_left,
         }
     }

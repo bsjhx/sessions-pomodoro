@@ -32,15 +32,23 @@
 
         currentState = {
             state_name: c.state_name,
-            state_duration: c.time_left
+            state_duration: c.state_duration
         };
 
         if (c.is_runnable) {
             interval = setInterval(onIntervalHandler, timeout);
+            counter = c.time_left;
+        } else {
+            counter = initialDuration;
         }
 
-        counter = currentState.state_duration === 0 ? 1500 : currentState.state_duration;
-        timeDisplay = updateClock(counter);
+        if (c.overtime > 0) {
+            counterOverFlowed = true;
+            additionalCounter = c.overtime;
+            additionalProgress = (additionalCounter / (counter + additionalCounter)) * 100;
+        }
+
+        timeDisplay = updateClock(counter + additionalCounter);
     });
 
     async function getTodayHistoryResponse() {
@@ -104,8 +112,9 @@
 
     function updateClock(i) {
         let seconds = i % 60;
-        let minutes = Math.floor(i / 60) % 3600;
-        return "".concat(renderTimeNumber(minutes), ':', renderTimeNumber(seconds));
+        let minutes = Math.floor(i / 60) % 60;
+        let hours = Math.floor(i / 3600) % 3600;
+        return "".concat(renderTimeNumber(hours), ':', renderTimeNumber(minutes), ':', renderTimeNumber(seconds));
     }
 
     function renderTimeNumber(n) {
