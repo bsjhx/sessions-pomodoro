@@ -1,8 +1,8 @@
 # Pomodoro App
 
-A minimalist Pomodoro timer built with **Rust + Tauri 2.x** and **SvelteKit**.
-This is very side project, I do not learn Rust to find job, only to have fun.
-So please be understanding, my target is not to be the best Rust developer in the world!
+A minimalist Pomodoro timer built with Rust + Tauri 2.x and SvelteKit.
+This is a personal side project—Rust is just for fun, not for career ambitions. Be gentle; I’m not trying to become a
+Rust guru overnight!
 
 <img src="imgs/img.png" alt="img" width="300"/>
 <img src="imgs/img_1.png" alt="img_1" width="300"/>
