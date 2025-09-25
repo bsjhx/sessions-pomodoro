@@ -47,7 +47,7 @@ fn main() {
 
             let enabled_devtools = read_boolean_variable(POMODORO_DEVTOOLS_ENABLED);
             if enabled_devtools {
-                let window = app.get_window("main").unwrap();
+                let window = app.get_webview_window("main").unwrap();
                 window.open_devtools();
             }
 

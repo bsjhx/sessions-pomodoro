@@ -1,5 +1,5 @@
 <script>
-    import {invoke} from '@tauri-apps/api/tauri'
+    import { invoke } from '@tauri-apps/api/core'
     import {onMount} from "svelte";
     import Calendar from "$lib/Calendar.svelte";
 
@@ -34,7 +34,6 @@
             state_name: c.state_name,
             state_duration: c.state_duration
         };
-
         if (c.is_runnable) {
             interval = setInterval(onIntervalHandler, timeout);
             counter = c.time_left;

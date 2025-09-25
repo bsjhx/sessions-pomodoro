@@ -5,7 +5,7 @@ use std::sync::Mutex;
 use tauri::State;
 
 #[tauri::command]
-#[cfg(not(tarpaulin_include))]
+#[cfg(not(wtarpaulin_include))]
 pub fn get_states_for_day(
     state: State<Mutex<HistoryContext>>,
     day: DateTime<Utc>,

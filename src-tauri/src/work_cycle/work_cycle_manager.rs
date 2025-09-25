@@ -41,13 +41,13 @@ mod test {
     use crate::db::MockWorkingCycleDb;
     use crate::work_cycle::WorkCycleManager;
     use assertor::{assert_that, BooleanAssertion};
-    use rand::{thread_rng, Rng};
+    use rand::{rng, thread_rng, Rng};
 
     #[test]
     fn after_n_work_sessions_next_break_should_be_long() {
         // Arrange
-        let mut rng = thread_rng();
-        let n = rng.gen_range(5..=20);
+        let mut rng = rng();
+        let n = rng.random_range(5..=20);
         let mut work_cycle = WorkCycleManager::new(n, Box::new(MockWorkingCycleDb::new()));
 
         // Act
