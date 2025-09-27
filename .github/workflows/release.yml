@@ -44,6 +44,9 @@ jobs:
         run: npm run build
         working-directory: ui
 
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+
       - name: Build Tauri app
         run: |
           cd src-tauri
