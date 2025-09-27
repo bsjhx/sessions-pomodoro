@@ -23,7 +23,6 @@ use std::env;
 use std::sync::Mutex;
 use tauri::Manager;
 
-#[cfg(not(tarpaulin_include))]
 fn main() {
     dotenv().ok();
     tauri::Builder::default()
@@ -48,9 +47,13 @@ fn main() {
             app.manage(Mutex::new(history_context));
 
             let enabled_devtools = read_boolean_variable(POMODORO_DEVTOOLS_ENABLED);
-            if enabled_devtools {
-                let window = app.get_webview_window("main").unwrap();
-                window.open_devtools();
+            if let Some(window) = app.get_webview_window("main") {
+                #[cfg(debug_assertions)]
+                {
+                    if enabled_devtools {
+                        window.open_devtools();
+                    }
+                }
             }
 
             Ok(())
