@@ -18,12 +18,14 @@ use app::work_cycle::{
 use app::{__cmd__end_current_session, db};
 use app::{__cmd__finish_cycle, settings};
 use core::default::Default;
+use dotenvy::dotenv;
 use std::env;
 use std::sync::Mutex;
 use tauri::Manager;
 
 #[cfg(not(tarpaulin_include))]
 fn main() {
+    dotenv().ok();
     tauri::Builder::default()
         .setup(|app| {
             let settings = load_settings();
