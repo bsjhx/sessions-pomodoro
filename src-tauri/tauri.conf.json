@@ -6,7 +6,8 @@
   "build": {
     "devUrl": "http://localhost:5173",
     "beforeDevCommand": "cd ui && npm install && npm run dev",
-    "beforeBuildCommand": "cd ui && npm install && npm run build"
+    "beforeBuildCommand": "cd ui && npm install && npm run build",
+    "frontendDist": "../ui/build"
   },
   "app": {
     "windows": [
