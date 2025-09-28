@@ -8,10 +8,14 @@ on:
 jobs:
   build-macos:
     runs-on: macos-13
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
+        with:
+          token: '${{ github.token }}'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -49,6 +53,9 @@ jobs:
       - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
-          files: src-tauri/target/release/bundle/macos/**/*
+          files: |
+            src-tauri/target/release/bundle/dmg/*.dmg
+            src-tauri/target/release/bundle/macos/*.app
+            src-tauri/target/release/bundle/app/*.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
