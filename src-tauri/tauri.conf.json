@@ -1,43 +1,28 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Tauri App",
+  "productName": "Pomodoro",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.bsjhx.pomodoro",
   "build": {
     "devUrl": "http://localhost:5173",
-    "frontendDist": "../ui/build",
-    "beforeDevCommand": {
-      "script": "npm i & npm run dev",
-      "cwd": "../ui/"
-    },
-    "beforeBuildCommand": {
-      "script": "npm i & npm run build",
-      "cwd": "../ui/"
-    }
+    "beforeDevCommand": "cd ui && npm install && npm run dev",
+    "beforeBuildCommand": "cd ui && npm install && npm run build"
   },
   "app": {
     "windows": [
       {
-        "title": "Tauri",
+        "title": "Pomodoro",
         "width": 800,
-        "height": 600,
-        "resizable": true,
-        "fullscreen": false
+        "height": 600
       }
-    ],
-    "security": {
-      "csp": null
-    }
+    ]
   },
   "bundle": {
     "active": true,
-    "targets": "all",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
+      "icons/icon.icns"
     ]
   }
 }

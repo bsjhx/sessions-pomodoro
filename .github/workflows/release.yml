@@ -48,7 +48,7 @@ jobs:
         run: cargo install tauri-cli
 
       - name: Build Tauri app
-        run: cargo tauri build -- --release
+        run: cargo tauri build
         working-directory: src-tauri
 
       - name: Upload Release
