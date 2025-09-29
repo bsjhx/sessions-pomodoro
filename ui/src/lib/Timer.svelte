@@ -2,6 +2,7 @@
     import { invoke } from '@tauri-apps/api/core'
     import {onMount} from "svelte";
     import Calendar from "$lib/Calendar.svelte";
+    import { getVersion } from "@tauri-apps/api/app";
 
     let interval = 0;
     let timeDisplay = "";
@@ -22,6 +23,8 @@
         states: []
     };
 
+    let version = "";
+
     onMount(async () => {
         initialDuration = await invoke('get_initial_time');
         todayHistoryResponse = await getTodayHistoryResponse();
@@ -40,6 +43,10 @@
         } else {
             counter = initialDuration;
         }
+
+        version = await getVersion();
+        console.log('jkjkjkj')
+        console.log('maciej', version)
 
         if (c.overtime > 0) {
             counterOverFlowed = true;
@@ -208,6 +215,7 @@
                     </div>
                     <Calendar states={todayHistoryResponse.states}></Calendar>
                 </div>
+                Version: {version}
             </div>
         </div>
     </div>
